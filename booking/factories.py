@@ -6,7 +6,7 @@ from factory import fuzzy
 from account.factories import UserFactory
 from beach.factories import BeachFactory
 from booking.models import Booking
-from inventory.factories import InventoryFactory
+from inventory.factories import InventoryItemFactory
 from sunbed.factories import SunbedFactory
 
 
@@ -27,14 +27,15 @@ class BookingFactory(factory.django.DjangoModelFactory):
         if extracted:
             for sb in extracted:
                 self.sunbeds.add(sb)
-                return
+            return
         # otherwise pick 1–3 available sunbeds, create more if needed
         needed = self.guest_count
 
         # find all sunbeds on this beach not already booked on this date
         available = list(
             self.sunbeds.model.objects.filter(beach=self.beach).exclude(
-                bookings__booking_date=self.booking_date
+                bookings__status__in=['confirmed', 'pending'],
+                bookings__booking_date=self.booking_date,
             )
         )
 
@@ -51,28 +52,24 @@ class BookingFactory(factory.django.DjangoModelFactory):
         if not create:
             return
         if extracted:
-            for sb in extracted:
-                self.inventory_items.add(sb)
-                return
-        # otherwise pick 1–3 available sunbeds, create more if needed
-        needed = randint(1, 3)
+            for item in extracted:
+                self.inventory_items.add(item)
+            return
+        # otherwise pick 1–3 available items, create more if needed
+        needed = randint(1, 8)
 
-        # find all sunbeds on this beach not already booked on this date
-        from django.db.models import Q
-
-        available = self.inventory_items.model.objects.filter(beach=self.beach).filter(
-            Q(
+        # find all items on this beach not already booked on this date
+        available = list(
+            self.inventory_items.model.objects.filter(beach=self.beach).exclude(
+                bookings__status__in=['confirmed', 'pending'],
                 bookings__booking_date=self.booking_date,
-                quantity__gte=needed,
-                _connector=Q.AND
             )
         )
 
-        if not available:
-            available = InventoryFactory.create_batch(10, beach=self.beach, quantity=randint(needed + 5, needed * 10))
+        # if not enough, create extras
+        while len(available) < needed:
+            available.append(InventoryItemFactory(beach=self.beach))
 
-        for item in available:
+        chosen = sample(available, needed)
+        for item in chosen:
             self.inventory_items.add(item)
-            # self.inventory_items.model.objects.filter(
-            #     pk=item.pk
-            # ).update(quantity=(item.quantity - needed))
