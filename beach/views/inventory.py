@@ -8,7 +8,7 @@ from inventory.filters import InventoryFilterSet
 from inventory.serializers import InventorySerializer
 
 
-class InventoryListViewSet(GenericViewSet):
+class BeachInventoryListViewSet(GenericViewSet):
     serializer_class = InventorySerializer
     pagination_class = GenericPagination
     queryset = Beach.objects.all()
