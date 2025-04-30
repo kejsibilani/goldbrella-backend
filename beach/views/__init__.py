@@ -4,6 +4,7 @@ from .location import BeachLocationViewSet
 from .images import BeachImageViewSet
 from .beach import BeachViewSet
 
+from .sunbed import BeachSunbedAvailabilityViewSet
 from .openings import BeachOpeningHourListViewSet
 from .season import BeachOpeningSeasonReadViewSet
 from .images import BeachImageListViewSet

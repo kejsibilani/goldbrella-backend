@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'account',
     'services',
     'beach',
+    'sunbed',
 ]
 
 MIDDLEWARE = [
