@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # project apps
     'account',
     'services',
+    'beach',
 ]
 
 MIDDLEWARE = [
