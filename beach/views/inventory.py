@@ -4,12 +4,11 @@ from rest_framework.viewsets import GenericViewSet
 
 from beach.models import Beach
 from helpers.pagination import GenericPagination
-from inventory.filters import InventoryFilterSet
-from inventory.serializers import InventorySerializer
+from inventory.serializers import InventoryItemSerializer
 
 
-class BeachInventoryListViewSet(GenericViewSet):
-    serializer_class = InventorySerializer
+class BeachInventoryItemListViewSet(GenericViewSet):
+    serializer_class = InventoryItemSerializer
     pagination_class = GenericPagination
     queryset = Beach.objects.all()
 
