@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'drf_yasg',
+    # project apps
+    'account',
 ]
 
 MIDDLEWARE = [
