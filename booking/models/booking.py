@@ -100,8 +100,9 @@ class Booking(models.Model):
                 )
 
             conflict_qs = self.sunbeds.through.objects.filter(
+                booking__status__in=['confirmed', 'pending'],
+                booking__booking_date=self.booking_date,
                 sunbed__in=self.sunbeds.all(),
-                booking__booking_date=self.booking_date
             )
             if self.pk:
                 conflict_qs = conflict_qs.exclude(booking=self)
@@ -125,7 +126,8 @@ class Booking(models.Model):
             # b) availability check
             conflict_qs = self.inventory_items.through.objects.filter(
                 inventory_item__in=self.inventory_items.all(),
-                booking__booking_date=self.booking_date
+                booking__status__in=['confirmed', 'pending'],
+                booking__booking_date=self.booking_date,
             )
             if self.pk:
                 conflict_qs = conflict_qs.exclude(booking=self)

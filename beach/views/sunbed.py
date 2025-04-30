@@ -37,6 +37,7 @@ class BeachSunbedListViewSet(GenericViewSet):
         if only_available and booking_date:
             queryset = queryset.exclude(
                 id__in=SunbedBooking.objects.filter(
+                    booking__status__in=['confirmed', 'pending'],
                     booking__booking_date=booking_date
                 ).values_list('sunbed_id', flat=True)
             )
@@ -50,6 +51,7 @@ class BeachSunbedListViewSet(GenericViewSet):
         elif booking_date and guest_count:
             queryset = queryset.filter(
                 sunbed_bookings__isnull=False,
+                sunbed_bookings__booking__status__in=['confirmed', 'pending'],
                 sunbed_bookings__booking__booking_date=booking_date,
                 sunbed_bookings__booking__guest_count=guest_count
             )

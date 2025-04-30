@@ -69,5 +69,6 @@ class Sunbed(models.Model):
             otherwise False.
         """
         return not self.sunbed_bookings.filter(
+            booking__status__in=['confirmed', 'pending'],
             booking__booking_date=booking_date
         ).exists()

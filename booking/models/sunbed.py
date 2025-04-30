@@ -31,8 +31,8 @@ class SunbedBooking(models.Model):
 
         # 2) No double‐booking this sunbed on that date
         clashes = SunbedBooking.objects.filter(
-            booking__status__in=['confirmed', 'pending'],
             booking__booking_date=self.booking.booking_date,
+            booking__status__in=['confirmed', 'pending'],
             sunbed=self.sunbed,
         )
         if self.pk: clashes = clashes.exclude(pk=self.pk)
