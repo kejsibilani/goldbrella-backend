@@ -17,6 +17,7 @@ from beach.factories import BeachLocationFactory
 from beach.factories import BeachFactory
 from beach.factories import BeachImageFactory
 from booking.factories import BookingFactory
+from inventory.factories import InventoryItemFactory
 from payment.factories import BookingPaymentFactory
 from sunbed.factories import SunbedFactory
 
@@ -85,6 +86,8 @@ for location in locations:
         print(f'..................... IMAGES FOR {beach.title.upper()} ADDED .....................')
         SunbedFactory.create_batch(50, beach=beach)
         print(f'..................... SUNBEDS FOR {beach.title.upper()} ADDED .....................')
+        InventoryItemFactory.create_batch(50, beach=beach)
+        print(f'..................... INVENTORY ITEMS FOR {beach.title.upper()} ADDED .....................')
         BookingFactory.create_batch(5, beach=beach, user=choice(guests), booked_by=choice(staff))
         print(f'..................... STAFF BOOKINGS FOR {beach.title.upper()} ADDED .....................')
         for _ in range(5):

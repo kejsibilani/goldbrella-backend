@@ -2,7 +2,7 @@ import factory
 from factory import fuzzy
 
 from beach.factories import BeachFactory
-from inventory.models import Inventory
+from inventory.models import InventoryItem
 
 
 INVENTORY_LIST = [
@@ -58,9 +58,9 @@ INVENTORY_LIST = [
     "Kite Surf Lessons"
 ]
 
-class InventoryFactory(factory.django.DjangoModelFactory):
+class InventoryItemFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Inventory
+        model = InventoryItem
         django_get_or_create = ('name', 'identity', 'beach',)
 
     name = fuzzy.FuzzyChoice(INVENTORY_LIST)
