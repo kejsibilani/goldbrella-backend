@@ -66,5 +66,4 @@ class InventoryFactory(factory.django.DjangoModelFactory):
     name = fuzzy.FuzzyChoice(INVENTORY_LIST)
     price = fuzzy.FuzzyDecimal(50.0, 500.0, precision=2)
     discount_percentage = fuzzy.FuzzyDecimal(0.0, 100.0, precision=2)
-    quantity = fuzzy.FuzzyInteger(1, 500)
     beach = factory.SubFactory(BeachFactory)

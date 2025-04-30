@@ -18,22 +18,23 @@ class Inventory(models.Model):
             MaxValueValidator(Decimal(100))
         ]
     )
-    quantity = models.PositiveIntegerField(
-        validators=[MinValueValidator(0)]
-    )
 
     beach = models.ForeignKey(
         to='beach.Beach',
         on_delete=models.CASCADE,
-        related_name="inventory_items"
+        related_name="inventories"
     )
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    @property
+    def quantity(self):
+        return self.items.count()
+
     class Meta:
-        verbose_name_plural = "Inventory Items"
-        verbose_name = "Inventory Item"
+        verbose_name_plural = "Inventory Lists"
+        verbose_name = "Inventory List"
         constraints = [
             models.UniqueConstraint(
                 Lower('name'), 'beach',

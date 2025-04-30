@@ -15,4 +15,4 @@ class InventoryViewSet(viewsets.ModelViewSet):
     filterset_class = InventoryFilterSet
     pagination_class = GenericPagination
     queryset = Inventory.objects.all()
-    search_fields = ['name']
+    search_fields = ['name', 'items__identity']
