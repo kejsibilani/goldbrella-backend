@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     # project apps
     'account',
+    'services',
 ]
 
 MIDDLEWARE = [
