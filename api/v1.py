@@ -7,4 +7,5 @@ urlpatterns = [
     path('', include(('beach.urls', 'beach'), namespace='beach')),
     path('', include(('sunbed.urls', 'sunbed'), namespace='sunbed')),
     path('', include(('services.urls', 'services'), namespace='services')),
+    path('', include(('inventory.urls', 'inventory'), namespace='inventory')),
 ]
