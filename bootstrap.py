@@ -3,7 +3,7 @@ import traceback
 from random import choice
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'GoldBrella.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'goldbrella.settings')
 django.setup()
 
 
