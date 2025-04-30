@@ -1,13 +1,14 @@
 from django.db.models import Q
-from rest_framework import viewsets
+from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import DjangoModelPermissions
+from rest_framework.viewsets import GenericViewSet
 
 from beach.models import BeachLocation
 from beach.serializers import BeachLocationSerializer
 from helpers.pagination import GenericPagination
 
 
-class BookingLocationViewSet(viewsets.ReadOnlyModelViewSet):
+class BookingLocationViewSet(ListModelMixin, GenericViewSet):
     permission_classes = [DjangoModelPermissions]
     serializer_class = BeachLocationSerializer
     pagination_class = GenericPagination
