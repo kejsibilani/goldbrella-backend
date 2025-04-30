@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'beach',
     'sunbed',
     'booking',
+    'payment',
     'inventory',
 ]
 
