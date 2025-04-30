@@ -17,7 +17,6 @@ class BeachImageViewSet(viewsets.ModelViewSet):
 
 class BeachImageListViewSet(viewsets.GenericViewSet):
     serializer_class = BeachImageSerializer
-    filterset_class = BeachImageFilterSet
     pagination_class = GenericPagination
     queryset = Beach.objects.all()
 

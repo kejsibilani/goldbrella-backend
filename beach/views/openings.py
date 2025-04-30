@@ -18,7 +18,6 @@ class BeachOpeningHourViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMix
 
 class BeachOpeningHourListViewSet(GenericViewSet):
     serializer_class = BeachOpeningHourSerializer
-    filterset_class = BeachOpeningHourFilterSet
     pagination_class = GenericPagination
     queryset = Beach.objects.all()
 

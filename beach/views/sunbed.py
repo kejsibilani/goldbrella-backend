@@ -13,14 +13,12 @@ from sunbed.serializers import SunbedQuerySerializer, AvailableSunbedSerializer
 class BeachSunbedAvailabilityViewSet(GenericViewSet):
     serializer_class = AvailableSunbedSerializer
     pagination_class = GenericPagination
-    filterset_class = SunbedFilterSet
     queryset = Beach.objects.all()
 
     @action(detail=True, methods=['get'], url_path='sunbeds')
     def sunbeds(self, request, *args, **kwargs):
         # fetch default serializer context
         context = self.get_serializer_context()
-        booked_sunbeds_id = None
 
         # fetch instance
         beach = self.get_object()

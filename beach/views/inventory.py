@@ -10,7 +10,6 @@ from inventory.serializers import InventorySerializer
 
 class InventoryListViewSet(GenericViewSet):
     serializer_class = InventorySerializer
-    filterset_class = InventoryFilterSet
     pagination_class = GenericPagination
     queryset = Beach.objects.all()
 
