@@ -3,13 +3,13 @@ from rest_framework import serializers
 
 from booking.models import Booking, SunbedBooking, InventoryBooking
 from helpers.fkeys.user import UserForeignKey
-from inventory.models import Inventory
+from inventory.models import InventoryItem
 from sunbed.models import Sunbed
 
 
 class BookingSerializer(serializers.ModelSerializer):
     inventory_items = serializers.PrimaryKeyRelatedField(
-        queryset=Inventory.objects.all(), many=True
+        queryset=InventoryItem.objects.all(), many=True
     )
     sunbeds = serializers.PrimaryKeyRelatedField(
         queryset=Sunbed.objects.all(), many=True
@@ -74,8 +74,13 @@ class BookingSerializer(serializers.ModelSerializer):
                 continue
 
             try:
-                if item.is_booked(booking_date): raise serializers.ValidationError(
-                    {'inventory_items': f"Inventory item {item.pk} stock is booked for {booking_date}"}
+                is_booked = InventoryBooking.objects.filter(
+                    booking__status__in=['confirmed', 'pending'],
+                    booking__booking_date=booking_date,
+                    inventory_item=item.pk,
+                ).exclude(booking=self.instance).exists()
+                if is_booked: raise serializers.ValidationError(
+                    {'inventory_items': f"Inventory item {item.pk} is booked for {booking_date}"}
                 )
             except serializers.ValidationError as ve:
                 errors.append(ve.detail)
