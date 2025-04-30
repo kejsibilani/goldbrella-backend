@@ -6,11 +6,10 @@ from rest_framework.viewsets import GenericViewSet
 from beach.models import Beach
 from booking.models import SunbedBooking
 from helpers.pagination import GenericPagination
-from sunbed.filters import SunbedFilterSet
 from sunbed.serializers import SunbedQuerySerializer, AvailableSunbedSerializer
 
 
-class BeachSunbedAvailabilityViewSet(GenericViewSet):
+class BeachSunbedListViewSet(GenericViewSet):
     serializer_class = AvailableSunbedSerializer
     pagination_class = GenericPagination
     queryset = Beach.objects.all()
