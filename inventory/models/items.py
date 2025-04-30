@@ -11,6 +11,19 @@ class InventoryItem(models.Model):
         related_name='items'
     )
 
+    def is_booked(self, booking_date):
+        """
+        Checks if a given booking date is already booked in the inventory.
+
+        :param booking_date: The date to check for existing bookings.
+        :type booking_date: datetime.date
+        :return: True if the item is booked for booking date, False otherwise.
+        :rtype: bool
+        """
+        return self.inventory_bookings.filter(
+            booking__booking_date=booking_date
+        ).exists()
+
     class Meta:
         verbose_name_plural = "Inventory Items"
         verbose_name = "Inventory Item"
