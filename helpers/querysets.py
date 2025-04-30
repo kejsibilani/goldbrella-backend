@@ -2,6 +2,7 @@ from django.db.models import Q
 
 from account.models import User
 from beach.models import BeachLocation, Beach, BeachOpeningSeason
+from booking.models import Booking
 from services.models import Facility, Rule
 from sunbed.models import Sunbed
 
@@ -42,3 +43,13 @@ def user_queryset(request):
             )
         )
     return User.objects.filter(pk=request.user.pk)
+
+
+def booking_queryset(request):
+    if request.user.is_superuser:
+        return Booking.objects.all()
+    elif request.user.is_staff:
+        return Booking.objects.filter(
+            Q(booked_by=request.user, user=request.user, _connector=Q.OR)
+        )
+    return Booking.objects.filter(user=request.user)

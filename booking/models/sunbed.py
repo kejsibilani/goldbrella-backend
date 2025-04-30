@@ -1,0 +1,41 @@
+from django.core.exceptions import ValidationError
+from django.db import models
+
+
+class SunbedBooking(models.Model):
+    booking = models.ForeignKey(
+        to='booking.Booking',
+        on_delete=models.CASCADE,
+        related_name="sunbed_bookings"
+    )
+    sunbed = models.ForeignKey(
+        to='sunbed.Sunbed',
+        on_delete=models.CASCADE,
+        related_name="sunbed_bookings"
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Sunbed Bookings"
+        verbose_name = "Sunbed Booking"
+
+    def __str__(self):
+        return f"Sunbed {self.sunbed.id} booked for {self.booking.user.username}"
+
+    def clean(self):
+        # 1) Sunbed must live on the same beach
+        if self.sunbed.beach_id != self.booking.beach_id:
+            raise ValidationError("Sunbed and Booking must share the same beach.")
+
+        # 2) No double‐booking this sunbed on that date
+        clashes = SunbedBooking.objects.filter(
+            booking__status__in=['confirmed', 'pending'],
+            booking__booking_date=self.booking.booking_date,
+            sunbed=self.sunbed,
+        )
+        if self.pk: clashes = clashes.exclude(pk=self.pk)
+        if clashes.exists(): raise ValidationError(
+            f"Sunbed {self.sunbed.identity} is already booked on {self.booking.booking_date}."
+        )
