@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from account.models import User
 from beach.models import Beach, BeachLocation, BeachOpeningHour, BeachImage, BeachOpeningSeason
 from booking.models import SunbedBooking, Booking
-from inventory.models import Inventory
+from inventory.models import InventoryItem
 from payment.models import BookingPayment
 from services.models import Facility, Rule
 from sunbed.models import Sunbed
@@ -39,7 +39,7 @@ admin.site.register(BeachImage)
 admin.site.register(BeachLocation)
 admin.site.register(BeachOpeningHour)
 admin.site.register(BeachOpeningSeason)
-admin.site.register(Inventory)
+admin.site.register(InventoryItem)
 admin.site.register(Booking)
 admin.site.register(BookingPayment)
 admin.site.register(Facility)
