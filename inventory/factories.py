@@ -61,9 +61,10 @@ INVENTORY_LIST = [
 class InventoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Inventory
-        django_get_or_create = ('name', 'beach',)
+        django_get_or_create = ('name', 'identity', 'beach',)
 
     name = fuzzy.FuzzyChoice(INVENTORY_LIST)
+    identity = factory.Sequence(lambda n: f"{INVENTORY_LIST[n % len(INVENTORY_LIST)]}{(n // len(INVENTORY_LIST)) + 1}")
     price = fuzzy.FuzzyDecimal(50.0, 500.0, precision=2)
     discount_percentage = fuzzy.FuzzyDecimal(0.0, 100.0, precision=2)
     beach = factory.SubFactory(BeachFactory)

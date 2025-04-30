@@ -115,7 +115,7 @@ class Booking(models.Model):
         #    and not exceed available stock for that date
         # —————————————————————————————————————————————
         for ib in self.inventory_items.through.objects.filter(booking=self):
-            inv = ib.inventory_item.inventory
+            inv = ib.inventory_item
             # a) same-beach check
             if inv.beach_id != self.beach_id:
                 errors.setdefault('inventory_items', []).append(
@@ -123,12 +123,16 @@ class Booking(models.Model):
                 )
 
             # b) availability check
-            is_booked = ib.inventory_item.is_booked(
+            conflict_qs = self.inventory_items.through.objects.filter(
+                inventory_item__in=self.inventory_items.all(),
                 booking__booking_date=self.booking_date
-            ).exclude(booking=self)
-            if is_booked: errors.setdefault('inventory_items', []).append(
-                "Inventory item already booked for the specified date."
             )
+            if self.pk:
+                conflict_qs = conflict_qs.exclude(booking=self)
+            if conflict_qs.exists():
+                errors.setdefault('inventory_items', []).append(
+                    "One or more inventory items are already booked for this date."
+                )
 
         # —————————————————————————————————————————————
         # 6) (Optional) enforce beach seasonality, e.g. within open/close dates

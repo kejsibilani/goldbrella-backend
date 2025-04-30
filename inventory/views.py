@@ -3,16 +3,16 @@ from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 
 from helpers.pagination import GenericPagination
-from inventory.filters import InventoryFilterSet
-from inventory.models import Inventory
-from inventory.serializers import InventorySerializer
+from inventory.filters import InventoryItemFilterSet
+from inventory.models import InventoryItem
+from inventory.serializers import InventoryItemSerializer
 
 
 # Create your views here.
-class InventoryViewSet(viewsets.ModelViewSet):
+class InventoryItemViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    serializer_class = InventorySerializer
-    filterset_class = InventoryFilterSet
+    serializer_class = InventoryItemSerializer
+    filterset_class = InventoryItemFilterSet
     pagination_class = GenericPagination
-    queryset = Inventory.objects.all()
-    search_fields = ['name', 'items__identity']
+    queryset = InventoryItem.objects.all()
+    search_fields = ['name', 'identity']

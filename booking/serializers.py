@@ -1,4 +1,3 @@
-from django.db.models import Sum
 from django.utils.timezone import localdate
 from rest_framework import serializers
 
@@ -74,16 +73,8 @@ class BookingSerializer(serializers.ModelSerializer):
                 errors.append(ve.detail)
                 continue
 
-            remaining = item.quantity - InventoryBooking.objects.filter(
-                booking__booking_date=booking_date,
-                inventory=item,
-            ).exclude(
-                booking=self.instance
-            ).aggregate(
-                sum=Sum('quantity')
-            ).get('sum', 0)
             try:
-                if remaining <= 0: raise serializers.ValidationError(
+                if item.is_booked(booking_date): raise serializers.ValidationError(
                     {'inventory_items': f"Inventory item {item.pk} stock is booked for {booking_date}"}
                 )
             except serializers.ValidationError as ve:

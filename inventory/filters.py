@@ -1,30 +1,18 @@
-from django.db.models import Count
 from django_filters.rest_framework import FilterSet, filters
 
 from helpers.querysets import beach_queryset
-from inventory.models import Inventory
+from inventory.models import InventoryItem
 
 
-class InventoryFilterSet(FilterSet):
+class InventoryItemFilterSet(FilterSet):
     name = filters.CharFilter(lookup_expr='icontains')
     price = filters.NumericRangeFilter()
     discount_percentage = filters.NumericRangeFilter()
-    quantity = filters.NumericRangeFilter(method='filter_quantity')
+    identity = filters.CharFilter(lookup_expr='icontains')
     beach = filters.ModelMultipleChoiceFilter(queryset=beach_queryset)
     created = filters.DateTimeFromToRangeFilter()
     updated = filters.DateTimeFromToRangeFilter()
-    # Item based filters
-    identity = filters.CharFilter(lookup_expr='icontains', field_name='items__identity')
 
     class Meta:
-        model = Inventory
+        model = InventoryItem
         fields = '__all__'
-
-    @staticmethod
-    def filter_quantity(queryset, name, value):
-        return queryset.annotate(
-            count=Count('items')
-        ).filter(
-            count__gte=value.start,
-            count__lte=value.stop
-        )
