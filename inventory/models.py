@@ -44,7 +44,7 @@ class InventoryItem(models.Model):
     def __str__(self):
         return f"{self.beach.title} | {self.name}"
 
-    def is_booked(self, booking_date):
+    def check_booking(self, booking_date):
         """
         Determine if a booking exists for the provided date.
 
@@ -58,5 +58,6 @@ class InventoryItem(models.Model):
         """
 
         return self.inventory_bookings.filter(
+            booking__status__in=['confirmed', 'pending'],
             booking__booking_date=booking_date
         ).exists()
