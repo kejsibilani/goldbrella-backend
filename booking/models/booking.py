@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Sum
 from django.utils.timezone import localdate
 
 from booking.choices import BookingStatusChoices
@@ -34,7 +33,7 @@ class Booking(models.Model):
     )
 
     inventory_items = models.ManyToManyField(
-        to='inventory.Inventory',
+        to='inventory.InventoryItem',
         related_name='bookings',
         through='booking.InventoryBooking'
     )
@@ -116,39 +115,38 @@ class Booking(models.Model):
         #    and not exceed available stock for that date
         # —————————————————————————————————————————————
         for ib in self.inventory_items.through.objects.filter(booking=self):
-            inv = ib.inventory
+            inv = ib.inventory_item.inventory
             # a) same-beach check
             if inv.beach_id != self.beach_id:
                 errors.setdefault('inventory_items', []).append(
                     f"Item “{inv.name}” is not sold on beach “{self.beach.title}”."
                 )
 
-            # b) quantity positive
-            if ib.quantity < 1:
-                errors.setdefault('inventory_items', []).append(
-                    f"Must request at least 1 of “{inv.name}”."
-                )
-
-            # c) availability check
-            used = self.inventory_items.through.objects.filter(
-                inventory=inv,
+            # b) availability check
+            is_booked = ib.inventory_item.is_booked(
                 booking__booking_date=self.booking_date
+            ).exclude(booking=self)
+            if is_booked: errors.setdefault('inventory_items', []).append(
+                "Inventory item already booked for the specified date."
             )
-            if self.pk:
-                used = used.exclude(booking=self)
-            total_booked = used.aggregate(sum=Sum('quantity'))['sum'] or 0
-            remaining = inv.quantity - total_booked
-            if ib.quantity > remaining:
-                errors.setdefault('inventory_items', []).append(
-                    f"Only {remaining}× “{inv.name}” left on {self.booking_date}."
-                )
 
         # —————————————————————————————————————————————
         # 6) (Optional) enforce beach seasonality, e.g. within open/close dates
         # —————————————————————————————————————————————
-        if hasattr(self.beach.season, 'opening_date') and hasattr(self.beach.season, 'closing_date'):
-            if not (self.beach.season.opening_date.month <= self.booking_date.month <= self.beach.season.closing_date.month):
-                raise ValidationError({'booking_date': f"Must book between {self.beach.season.opening_date.strftime('%B')} and {self.beach.season.closing_date.strftime('%B')}."})
+        # if hasattr(self.beach.season, 'opening_date') and hasattr(self.beach.season, 'closing_date'):
+        #     # open 9 close 5
+        #     if self.beach.season.opening_date.month > self.beach.season.closing_date.month:
+        #         # 9-12 1-5
+        #         if (
+        #                 (self.beach.season.opening_date.month < self.booking_date.month < 12) or
+        #                 (self.beach.season.closing_date.month > self.booking_date.month > 1)
+        #         ):
+        #
+        #     elif self.beach.season.opening_date.month > self.beach.season.closing_date.month:
+        #         self.booking_date.month
+        #     else:
+        #         ( <= self.booking_date.month <= ):
+        #         raise ValidationError({'booking_date': f"Must book between {self.beach.season.opening_date.strftime('%B')} and {self.beach.season.closing_date.strftime('%B')}."})
 
         if errors:
             raise ValidationError(errors)

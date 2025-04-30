@@ -8,8 +8,8 @@ class InventoryBooking(models.Model):
         on_delete=models.CASCADE,
         related_name="inventory_bookings"
     )
-    inventory = models.ForeignKey(
-        to='inventory.Inventory',
+    inventory_item = models.ForeignKey(
+        to='inventory.InventoryItem',
         on_delete=models.CASCADE,
         related_name="inventory_bookings"
     )
@@ -22,9 +22,9 @@ class InventoryBooking(models.Model):
         verbose_name = "Inventory Item Booking"
 
     def __str__(self):
-        return f"Inventory item {self.inventory.id} booked for {self.booking.user.username}"
+        return f"Inventory item {self.inventory_item.id} booked for {self.booking.user.username}"
 
     def clean(self):
         # 1) Inventory must live on the same beach
-        if self.inventory.beach_id != self.booking.beach_id:
-            raise ValidationError("Inventory and Booking must share the same beach.")
+        if self.inventory_item.inventory.beach_id != self.booking.beach_id:
+            raise ValidationError("Inventory item and Booking must share the same beach.")
