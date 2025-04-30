@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                     "beach",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="inventories",
+                        related_name="inventory_items",
                         to="beach.beach",
                     ),
                 ),

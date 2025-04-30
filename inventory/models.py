@@ -25,7 +25,7 @@ class InventoryItem(models.Model):
     beach = models.ForeignKey(
         to='beach.Beach',
         on_delete=models.CASCADE,
-        related_name="inventories"
+        related_name="inventory_items"
     )
 
     created = models.DateTimeField(auto_now_add=True)
