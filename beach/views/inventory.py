@@ -36,7 +36,7 @@ class BeachInventoryItemListViewSet(GenericViewSet):
                 id__in=InventoryBooking.objects.filter(
                     booking__status__in=['confirmed', 'pending'],
                     booking__booking_date=booking_date
-                ).values_list('sunbed_id', flat=True)
+                ).values_list('inventory_item_id', flat=True)
             )
 
         # filter queryset
