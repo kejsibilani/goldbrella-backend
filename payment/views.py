@@ -27,4 +27,4 @@ class BookingPaymentViewSet(viewsets.ModelViewSet):
             return BookingPayment.objects.filter(
                 Q(booking__user=request_user, booking__booked_by=request_user, _connector=Q.OR)
             )
-        return BookingPayment.objects.filter(user=request_user)
+        return BookingPayment.objects.filter(booking__user=request_user)
