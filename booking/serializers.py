@@ -106,10 +106,8 @@ class BookingSerializer(serializers.ModelSerializer):
         inventory_items = validated_data.pop('inventory_items', None)
         booking = super().create(validated_data)
         for item in inventory_items:
-            InventoryBooking.objects.create(
-                booking=booking,
-                inventory_item=item,
-                inventory_quantity=inventory_items[item]
+            booking.inventory_items.add(
+                item, through_defaults={'inventory_quantity': inventory_items[item]}
             )
         return booking
 
@@ -117,21 +115,9 @@ class BookingSerializer(serializers.ModelSerializer):
         inventory_items = validated_data.pop('inventory_items', None)
         booking = super().update(instance, validated_data)
         if inventory_items:
-            InventoryBooking.objects.filter(booking=booking).exclude(
-                inventory_item__in=inventory_items.keys()
-            ).delete()
+            booking.inventory_items.clear()
             for item in inventory_items:
-                try: ib = InventoryBooking.objects.get(
-                    booking=booking,
-                    inventory_item=item
+                booking.inventory_items.add(
+                    item, through_defaults={'inventory_quantity': inventory_items[item]}
                 )
-                except InventoryBooking.DoesNotExist:
-                    InventoryBooking.objects.create(
-                        booking=booking,
-                        inventory_item=item,
-                        inventory_quantity=inventory_items[item]
-                    )
-                else:
-                    ib.inventory_quantity = inventory_items[item]
-                    ib.save()
         return booking
