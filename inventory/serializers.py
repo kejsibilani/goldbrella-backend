@@ -18,6 +18,7 @@ class InventoryItemNameSerializer(serializers.ModelSerializer):
 class InventoryQuerySerializer(serializers.Serializer):
     only_available = serializers.BooleanField(default=False)
     booking_date = serializers.DateField(required=False)
+    name = serializers.CharField(required=False)
 
     def validate(self, data):
         only_available = data.get("only_available")

@@ -27,6 +27,7 @@ class BeachInventoryItemListViewSet(GenericViewSet):
         # filter queryset for booking date and availability and guest count
         only_available = query_serializer.data.get('only_available', False)
         booking_date = query_serializer.data.get('booking_date')
+        name = query_serializer.data.get('name')
 
         # set booking date in context
         context['booking_date'] = booking_date
@@ -40,7 +41,8 @@ class BeachInventoryItemListViewSet(GenericViewSet):
             )
 
         # filter queryset
-        queryset = self.filter_queryset(queryset)
+        if name:
+            queryset = queryset.filter(name__icontains=name)
         # paginate the response
         page = self.paginate_queryset(queryset)
         if page is not None:
