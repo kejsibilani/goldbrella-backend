@@ -31,8 +31,12 @@ class Migration(migrations.Migration):
                 ),
                 ("name", models.CharField(max_length=100)),
                 (
-                    "identity",
-                    models.CharField(blank=True, default=uuid.uuid4, max_length=100),
+                    "quantity",
+                    models.PositiveIntegerField(
+                        validators=[
+                            django.core.validators.MinValueValidator(1)
+                        ],
+                    ),
                 ),
                 (
                     "price",
@@ -76,7 +80,6 @@ class Migration(migrations.Migration):
             model_name="inventoryitem",
             constraint=models.UniqueConstraint(
                 django.db.models.functions.text.Lower("name"),
-                django.db.models.functions.text.Upper("identity"),
                 models.F("beach"),
                 name="unique_inventory_item_per_beach",
             ),

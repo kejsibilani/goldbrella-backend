@@ -7,7 +7,7 @@ from rest_framework.viewsets import GenericViewSet
 from helpers.pagination import GenericPagination
 from inventory.filters import InventoryItemFilterSet
 from inventory.models import InventoryItem
-from inventory.serializers import InventoryItemSerializer, InventoryItemNameSerializer
+from inventory.serializers import InventoryItemSerializer
 
 
 # Create your views here.
@@ -18,9 +18,3 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
     pagination_class = GenericPagination
     queryset = InventoryItem.objects.all()
     search_fields = ['name', 'identity']
-
-
-class InventoryItemNameListViewSet(ListModelMixin, GenericViewSet):
-    serializer_class = InventoryItemNameSerializer
-    queryset = InventoryItem.objects.distinct('name')
-    pagination_class = GenericPagination

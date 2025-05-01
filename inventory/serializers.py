@@ -9,16 +9,9 @@ class InventoryItemSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class InventoryItemNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InventoryItem
-        fields = ('name',)
-
-
 class InventoryQuerySerializer(serializers.Serializer):
     only_available = serializers.BooleanField(default=False)
     booking_date = serializers.DateField(required=False)
-    name = serializers.CharField(required=False)
 
     def validate(self, data):
         only_available = data.get("only_available")
@@ -38,7 +31,7 @@ class AvailableInventoryItemSerializer(serializers.ModelSerializer):
         model = InventoryItem
         fields = '__all__'
         read_only_fields = (
-            'name', 'identity', 'price', 'discount_percentage', 'beach'
+            'name', 'price', 'discount_percentage', 'beach'
         )
 
     def get_available(self, obj):
@@ -46,6 +39,4 @@ class AvailableInventoryItemSerializer(serializers.ModelSerializer):
 
         if booking_date is None:
             return None
-        elif obj.check_booking(booking_date):
-            return False
-        return True
+        return obj.get_available(booking_date)

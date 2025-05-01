@@ -8,7 +8,9 @@ from django.db.models.functions import Lower, Upper
 
 class InventoryItem(models.Model):
     name = models.CharField(max_length=100)
-    identity = models.CharField(max_length=100, blank=True, default=uuid4)
+    quantity = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)]
+    )
 
     price = models.DecimalField(
         max_digits=10, decimal_places=2,
@@ -36,7 +38,7 @@ class InventoryItem(models.Model):
         verbose_name = "Inventory Item"
         constraints = [
             models.UniqueConstraint(
-                Lower('name'), Upper('identity'), 'beach',
+                Lower('name'), 'beach',
                 name='unique_inventory_item_per_beach'
             ),
         ]
@@ -44,20 +46,51 @@ class InventoryItem(models.Model):
     def __str__(self):
         return f"{self.beach.title} | {self.name}"
 
-    def check_booking(self, booking_date):
+    def get_available(self, booking_date):
         """
-        Determine if a booking exists for the provided date.
+        Calculate the available inventory for a given booking date.
 
-        This method checks whether a booking has been made for the given
-        date and returns a boolean result indicating the booking status.
+        This method determines the total quantity of inventory currently
+        booked with the specified booking date and subtracts it from the
+        total quantity available. It accounts for bookings with statuses
+        of 'confirmed' and 'pending'. If no inventory is booked, the
+        entire available quantity is returned.
 
-        :param booking_date: The date for which the booking status is to be checked.
-        :type booking_date: datetime.date
-        :return: True if a booking exists for the given date, False otherwise.
+        :param booking_date: The date for which the available inventory is to
+            be calculated.
+            Type: datetime.date
+        :return: The remaining quantity of inventory available for the given
+            booking date. If no inventory is booked, returns the total
+            available quantity.
+            Type: int
+        """
+
+        booked = self.inventory_bookings.filter(
+            booking__status__in=['confirmed', 'pending'],
+            booking__booking_date=booking_date,
+        ).aggregate(sum=models.Sum('inventory__quantity')).get('sum', 0)
+        return (self.quantity - booked) or 0
+
+    def check_available(self, booking_date, needed: int = 1):
+        """
+        Checks inventory availability for a specified booking date and required
+        quantity. This function evaluates the outstanding booked quantities
+        for the given date and determines if the remaining inventory can fulfill
+        the requested `needed` quantity.
+
+        This function assumes that inventory bookings are stored and can
+        be filtered based on booking status and date, and that the sum
+        of booked inventory quantities can be successfully aggregated.
+
+        :param booking_date: The date for which the availability needs to be checked.
+        :type booking_date: datetime.date or compatible type
+        :param needed: Number of units required for booking. Defaults to 1.
+        :return: Whether the requested number of units (`needed`) is available.
         :rtype: bool
         """
 
-        return self.inventory_bookings.filter(
+        booked = self.inventory_bookings.filter(
             booking__status__in=['confirmed', 'pending'],
-            booking__booking_date=booking_date
-        ).exists()
+            booking__booking_date=booking_date,
+        ).aggregate(sum=models.Sum('inventory__quantity')).get('sum', 0)
+        return (self.quantity - booked) >= needed
