@@ -22,5 +22,5 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
 
 class InventoryItemNameListViewSet(ListModelMixin, GenericViewSet):
     serializer_class = InventoryItemNameSerializer
-    queryset = InventoryItem.objects.all()
+    queryset = InventoryItem.objects.distinct('name')
     pagination_class = GenericPagination
