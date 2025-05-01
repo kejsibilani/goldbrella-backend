@@ -76,7 +76,7 @@ class BookingFactory(factory.django.DjangoModelFactory):
                 bookings__booking_date=self.booking_date
             )
 
-        chosen = sample(available, needed)
+        chosen = sample(list(available), needed)
         for item in chosen:
             inv_item = self.inventory_items.through.objects.filter(
                 inventory_item=item,
