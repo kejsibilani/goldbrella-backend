@@ -68,7 +68,7 @@ class InventoryItem(models.Model):
         booked = self.inventory_bookings.filter(
             booking__status__in=['confirmed', 'pending'],
             booking__booking_date=booking_date,
-        ).aggregate(sum=models.Sum('inventory_item__quantity')).get('sum', 0) or 0
+        ).aggregate(sum=models.Sum('inventory_quantity')).get('sum', 0) or 0
         return (self.quantity - booked) or 0
 
     def check_available(self, booking_date, needed: int = 1):
@@ -92,5 +92,5 @@ class InventoryItem(models.Model):
         booked = self.inventory_bookings.filter(
             booking__status__in=['confirmed', 'pending'],
             booking__booking_date=booking_date,
-        ).aggregate(sum=models.Sum('inventory__quantity')).get('sum', 0) or 0
+        ).aggregate(sum=models.Sum('inventory_quantity')).get('sum', 0) or 0
         return (self.quantity - booked) >= needed
