@@ -141,6 +141,13 @@ class Migration(migrations.Migration):
                         to="inventory.inventoryitem",
                     ),
                 ),
+                (
+                    "inventory_quantity",
+                    models.PositiveIntegerField(
+                        default=1,
+                        validators=[django.core.validators.MinValueValidator(1)]
+                    ),
+                ),
             ],
             options={
                 "verbose_name": "Inventory Item Booking",

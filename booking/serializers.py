@@ -21,6 +21,13 @@ class BookingSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_field = ('status', 'booked_by')
 
+    @staticmethod
+    def validate_inventory_items(value):
+        quantity_based_dict = {}
+        for item in value:
+            quantity_based_dict[item] = quantity_based_dict.get(item.pk, 0) + 1
+        return quantity_based_dict
+
     def validate(self, attrs):
         errors = []
 
@@ -63,7 +70,7 @@ class BookingSerializer(serializers.ModelSerializer):
                 errors.append(ve.detail)
 
         # beach validation on sunbeds
-        inventory_items = attrs.get("inventory_items", self.instance.inventory_items.all() if self.instance else [])
+        inventory_items = attrs.pop("inventory_items", self.instance.inventory_items.all() if self.instance else [])
         for item in inventory_items:
             try:
                 if item.beach.pk != beach.pk: raise serializers.ValidationError(
@@ -74,11 +81,17 @@ class BookingSerializer(serializers.ModelSerializer):
                 continue
 
             try:
-                is_booked = InventoryBooking.objects.filter(
-                    booking__status__in=['confirmed', 'pending'],
-                    booking__booking_date=booking_date,
-                    inventory_item=item.pk,
-                ).exclude(booking=self.instance).exists()
+                quantity = (
+                    inventory_items[item]
+                    if isinstance(inventory_items, dict) else
+                    self.instance.inventory_bookings.filter(
+                        inventory_item=item
+                    ).values_list('inventory_quantity', flat=True).first()
+                )
+                previous_quantity = self.instance.inventory_bookings.filter(
+                    inventory_item=item
+                ).values_list('inventory_quantity', flat=True).first()
+                is_booked = item.check_available(booking_date, (quantity - previous_quantity))
                 if is_booked: raise serializers.ValidationError(
                     {'inventory_items': f"Inventory item {item.pk} is booked for {booking_date}"}
                 )
@@ -88,3 +101,37 @@ class BookingSerializer(serializers.ModelSerializer):
         if errors:
             raise serializers.ValidationError({'detail': errors})
         return attrs
+
+    def create(self, validated_data):
+        inventory_items = validated_data.pop('inventory_items', None)
+        booking = super().create(validated_data)
+        for item in inventory_items:
+            InventoryBooking.objects.create(
+                booking=booking,
+                inventory_item=item,
+                inventory_quantity=inventory_items[item]
+            )
+        return booking
+
+    def update(self, instance, validated_data):
+        inventory_items = validated_data.pop('inventory_items', None)
+        booking = super().update(instance, validated_data)
+        if inventory_items:
+            InventoryBooking.objects.filter(booking=booking).exclude(
+                inventory_item__in=inventory_items.keys()
+            ).delete()
+            for item in inventory_items:
+                try: ib = InventoryBooking.objects.get(
+                    booking=booking,
+                    inventory_item=item
+                )
+                except InventoryBooking.DoesNotExist:
+                    InventoryBooking.objects.create(
+                        booking=booking,
+                        inventory_item=item,
+                        inventory_quantity=inventory_items[item]
+                    )
+                else:
+                    ib.inventory_quantity = inventory_items[item]
+                    ib.save()
+        return booking
