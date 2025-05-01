@@ -1,5 +1,6 @@
 from django.db.models import Q
 from rest_framework.decorators import action
+from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -8,6 +9,7 @@ from payment.serializers import BookingPaymentSerializer
 
 
 class BookingPaymentListViewSet(GenericViewSet):
+    permission_classes = [DjangoModelPermissions]
     serializer_class = BookingPaymentSerializer
 
     def get_queryset(self):
