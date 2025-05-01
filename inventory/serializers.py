@@ -9,6 +9,12 @@ class InventoryItemSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class InventoryItemNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InventoryItem
+        fields = ('name',)
+
+
 class InventoryQuerySerializer(serializers.Serializer):
     only_available = serializers.BooleanField(default=False)
     booking_date = serializers.DateField(required=False)
