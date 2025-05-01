@@ -23,5 +23,7 @@ class BookingLocationViewSet(ListModelMixin, GenericViewSet):
                     beaches__bookings__user=request_user,
                     _connector=Q.OR
                 )
-            )
-        return BeachLocation.objects.filter(beaches__bookings__user=request_user)
+            ).order_by('-beaches__bookings__booking_date')
+        return BeachLocation.objects.filter(
+            beaches__bookings__user=request_user
+        ).order_by('-beaches__bookings__booking_date')
