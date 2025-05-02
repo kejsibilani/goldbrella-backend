@@ -70,7 +70,7 @@ class BookingSerializer(serializers.ModelSerializer):
                 errors.append(ve.detail)
 
         # beach validation on sunbeds
-        inventory_items = attrs.pop("inventory_items", self.instance.inventory_items.all() if self.instance else [])
+        inventory_items = attrs.get("inventory_items", self.instance.inventory_items.all() if self.instance else [])
         for item in inventory_items:
             try:
                 if item.beach.pk != beach.pk: raise serializers.ValidationError(
@@ -90,8 +90,8 @@ class BookingSerializer(serializers.ModelSerializer):
                 )
                 previous_quantity = self.instance.inventory_bookings.filter(
                     inventory_item=item
-                ).values_list('inventory_quantity', flat=True).first()
-                is_booked = item.check_available(booking_date, (quantity - previous_quantity))
+                ).values_list('inventory_quantity', flat=True).first() if self.instance else 0
+                is_booked = not item.check_available(booking_date, (quantity - previous_quantity))
                 if is_booked: raise serializers.ValidationError(
                     {'inventory_items': f"Inventory item {item.pk} is booked for {booking_date}"}
                 )
@@ -103,7 +103,7 @@ class BookingSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        inventory_items = validated_data.pop('inventory_items', None)
+        inventory_items = validated_data.pop('inventory_items', {})
         booking = super().create(validated_data)
         for item in inventory_items:
             booking.inventory_items.add(
@@ -112,7 +112,7 @@ class BookingSerializer(serializers.ModelSerializer):
         return booking
 
     def update(self, instance, validated_data):
-        inventory_items = validated_data.pop('inventory_items', None)
+        inventory_items = validated_data.pop('inventory_items', {})
         booking = super().update(instance, validated_data)
         if inventory_items:
             booking.inventory_items.clear()
