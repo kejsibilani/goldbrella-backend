@@ -7,6 +7,30 @@ from inventory.models import InventoryItem
 from sunbed.models import Sunbed
 
 
+class InventoryItemBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InventoryItem
+        fields = ('id', 'name', 'quantity', 'price', 'discount_percentage')
+
+
+class SunbedBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sunbed
+        fields = ('id', 'sunbed_type', 'price', 'discount_percentage')
+
+
+class BookingReadSerializer(serializers.ModelSerializer):
+    inventory_items = InventoryItemBookingSerializer(read_only=True, many=True)
+    sunbeds = SunbedBookingSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Booking
+        fields = '__all__'
+        read_only_field = (
+            'beach', 'booking_date', 'guest_count', 'user', 'booked_by', 'status'
+        )
+
+
 class BookingSerializer(serializers.ModelSerializer):
     inventory_items = serializers.PrimaryKeyRelatedField(
         queryset=InventoryItem.objects.all(), many=True

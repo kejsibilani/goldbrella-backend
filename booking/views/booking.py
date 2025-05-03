@@ -6,7 +6,7 @@ from rest_framework.permissions import DjangoModelPermissions
 
 from booking.filters import BookingFilterSet
 from booking.models import Booking
-from booking.serializers import BookingSerializer
+from booking.serializers import BookingSerializer, BookingReadSerializer
 from helpers.pagination import GenericPagination
 
 
@@ -14,7 +14,6 @@ from helpers.pagination import GenericPagination
 class BookingViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     permission_classes = [DjangoModelPermissions]
-    serializer_class = BookingSerializer
     pagination_class = GenericPagination
     filterset_class = BookingFilterSet
     search_fields = [
@@ -22,6 +21,11 @@ class BookingViewSet(viewsets.ModelViewSet):
         'booked_by__first_name', 'booked_by__last_name',
         'booked_by__email', 'sunbeds__identity', 'booking_date',
     ]
+
+    def get_serializer_class(self):
+        if self.action in ['retrieve', 'list']:
+            return BookingReadSerializer
+        return BookingSerializer
 
     def get_queryset(self):
         request_user = self.request.user
