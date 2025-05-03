@@ -196,6 +196,20 @@ SIMPLE_JWT = {
 }
 
 
+# Swagger Settings
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,   # enable the “Login via session” option
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Authorization",
+        },
+    },
+    "REFETCH_SCHEMA_WITH_AUTH": True,    # reload spec after you authorize
+    "REFETCH_SCHEMA_ON_LOGOUT": True,    # reload spec after you log out
+}
+
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
