@@ -28,8 +28,8 @@ class BookingBeachViewSet(ListModelMixin, GenericViewSet):
                     ),
                     _connector=Q.AND,
                 )
-            ).order_by('-beaches__bookings__booking_date')
+            ).order_by('-bookings__booking_date')
         return Beach.objects.filter(
             bookings__booking_date__lt=localdate(),
             bookings__user=request_user
-        ).order_by('-beaches__bookings__booking_date')
+        ).order_by('-bookings__booking_date')
