@@ -12,6 +12,7 @@ from django.contrib.auth.models import Permission
 from django.core.management import call_command
 
 from account.factories import UserFactory
+from account.settings import GUEST_USER_PERMISSION_SET, STAFF_USER_PERMISSION_SET
 from account.factories import GroupFactory
 from beach.factories import BeachLocationFactory
 from beach.factories import BeachFactory
@@ -31,26 +32,6 @@ def clear_database():
         except DatabaseError: traceback.print_exc()
 
 
-def crud(model: str, c: bool = True, r: bool = True, u: bool = True, d: bool = True):
-    perms = []
-    if c: perms.append(f'add_{model}')
-    if r: perms.append(f'view_{model}')
-    if u: perms.append(f'change_{model}')
-    if d: perms.append(f'delete_{model}')
-    return perms
-
-# Set the permissions for guest and staff
-guest_permission_set = {
-    *crud('booking'),
-    *crud('bookingpayment', c=False, u=False, d=False),
-}
-
-staff_permission_set = {
-    *crud('booking'),
-    *crud('user', d=False),
-    *crud('bookingpayment', c=False, d=False),
-}
-
 # Clear the database
 clear_database()
 print('..................... DATABASE CLEARED .....................')
@@ -59,10 +40,10 @@ call_command('migrate', '-v', '0', '--no-input')
 print('..................... DATABASE MIGRATED .....................')
 print(f'..................... DATA SEEDING STARTED .....................')
 # Create Staff and Guest Groups
-guest_permissions = Permission.objects.filter(codename__in=guest_permission_set)
+guest_permissions = Permission.objects.filter(codename__in=GUEST_USER_PERMISSION_SET)
 guest_group = GroupFactory.create(name='Staff', permissions=guest_permissions)
 print('..................... STAFF GROUP CREATED .....................')
-staff_permissions = Permission.objects.filter(codename__in=staff_permission_set)
+staff_permissions = Permission.objects.filter(codename__in=STAFF_USER_PERMISSION_SET)
 staff_group = GroupFactory.create(name='Guest', permissions=staff_permissions)
 print('..................... GUEST GROUP CREATED .....................')
 # Create Super User
