@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -44,7 +45,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         # is_staff for staff user and is_superuser for admin user
         if role == 'staff': attrs['is_staff'] = True
         elif role == 'admin': attrs['is_superuser'] = True
-
+        # add user group
+        group = Group.objects.filter(name__iexact=role)
+        attrs['groups'] = group
         return attrs
 
     def create(self, validated_data):
