@@ -1,6 +1,7 @@
 from django.utils.timezone import localdate
 from rest_framework import serializers
 
+from beach.models import Beach
 from booking.models import Booking, SunbedBooking, InventoryBooking
 from helpers.fkeys.user import UserForeignKey
 from inventory.models import InventoryItem
@@ -19,9 +20,16 @@ class SunbedBookingSerializer(serializers.ModelSerializer):
         fields = ('id', 'sunbed_type', 'price', 'discount_percentage')
 
 
+class BeachBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Beach
+        fields = ('id', 'title', 'longitude', 'latitude', 'location')
+
+
 class BookingReadSerializer(serializers.ModelSerializer):
     inventory_items = InventoryItemBookingSerializer(read_only=True, many=True)
     sunbeds = SunbedBookingSerializer(read_only=True, many=True)
+    beach = BeachBookingSerializer(read_only=True)
 
     class Meta:
         model = Booking
