@@ -36,6 +36,8 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    # server apps
+    'daphne',
     # system apps
     "django.contrib.admin",
     "django.contrib.auth",
