@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:latest
-    container_name: postgres_container
+    container_name: postgresql_container
     restart: unless-stopped
     env_file: .env
     environment:
@@ -21,8 +21,8 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-'admin@goldbrella.com'}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-'admin123'}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-pgadmin@goldbrella.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
     ports:
       - "8080:80"
     depends_on:
