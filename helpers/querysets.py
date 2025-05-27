@@ -6,6 +6,11 @@ from booking.models import Booking
 from location.models import Location
 from services.models import Facility, Rule
 from sunbed.models import Sunbed
+from zone.models import Zone
+
+
+def zone_queryset(request):
+    return Zone.objects.all()
 
 
 def beach_location_queryset(request):
@@ -56,6 +61,11 @@ def user_queryset(request):
 
 def supervisor_queryset(request):
     return User.objects.filter(role='supervisor')
+
+
+def staff_queryset(request):
+    return User.objects.filter(role='staff')
+
 
 def booking_queryset(request):
     if request.user.is_superuser:
