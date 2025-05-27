@@ -1,14 +1,15 @@
 from django.db.models import Q
 
 from account.models import User
-from beach.models import BeachLocation, Beach, BeachOpeningSeason
+from beach.models import Beach, BeachOpeningSeason
 from booking.models import Booking
+from location.models import Location
 from services.models import Facility, Rule
 from sunbed.models import Sunbed
 
 
 def beach_location_queryset(request):
-    return BeachLocation.objects.all()
+    return Location.objects.all()
 
 
 def beach_season_queryset(request):
@@ -32,18 +33,29 @@ def sunbed_queryset(request):
 
 
 def user_queryset(request):
-    if request.user.is_superuser:
+    if request.user.has_role('admin'):
         return User.objects.all()
-    elif request.user.is_staff:
+    elif request.user.has_role('supervisor'):
         return User.objects.filter(
             Q(
-                Q(is_staff=False, is_superuser=False, _connector=Q.AND),
-                Q(pk=request.user.pk),
+                role='guest',
+                pk=request.user.pk,
+                _connector=Q.OR
+            )
+        )
+    elif request.user.has_role('staff'):
+        return User.objects.filter(
+            Q(
+                role='guest',
+                pk=request.user.pk,
                 _connector=Q.OR
             )
         )
     return User.objects.filter(pk=request.user.pk)
 
+
+def supervisor_queryset(request):
+    return User.objects.filter(role='supervisor')
 
 def booking_queryset(request):
     if request.user.is_superuser:
