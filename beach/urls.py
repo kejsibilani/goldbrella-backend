@@ -22,6 +22,7 @@ router.register('beaches', BeachOpeningHourListViewSet, basename='opening-list')
 router.register('beaches', BeachOpeningSeasonListViewSet, basename='season-list')
 router.register('beaches', BeachZoneListViewSet, basename='zone-list')
 router.register('beaches', BeachSunbedListViewSet, basename='sunbed-list')
+# router.register('beaches', BeachInventoryItemListViewSet, basename='inventory-item-list')
 router.register('beaches', BeachViewSet, basename='beach')
 
 
