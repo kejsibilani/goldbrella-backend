@@ -11,7 +11,7 @@ class SunbedSerializer(serializers.ModelSerializer):
         validators = [
             CaseInsensitiveUniqueTogetherValidator(
                 queryset=Sunbed.objects.all(),
-                fields=('area', 'identity', 'beach')
+                fields=('area', 'identity', 'zone')
             )
         ]
         extra_kwargs = {
@@ -26,7 +26,7 @@ class AvailableSunbedSerializer(serializers.ModelSerializer):
         model = Sunbed
         fields = '__all__'
         read_only_fields = (
-            'sunbed_type', 'area', 'identity', 'price', 'discount_percentage', 'beach'
+            'sunbed_type', 'area', 'identity', 'price', 'status', 'zone'
         )
 
     def get_available(self, obj):

@@ -1,16 +1,17 @@
 from decimal import Decimal
 
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.functions import Upper
 
+from sunbed.choices import SunbedStatusChoices
 from sunbed.choices import SunbedTypeChoices
 
 
 # Sunbed Model
 class Sunbed(models.Model):
     sunbed_type = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=SunbedTypeChoices.choices,
         default=SunbedTypeChoices.STANDARD.value
     )
@@ -21,18 +22,15 @@ class Sunbed(models.Model):
         validators=[
             MinValueValidator(Decimal(0)),
         ],
-    )  # Added price field
-
-    discount_percentage = models.DecimalField(
-        max_digits=5, decimal_places=2, default=Decimal(0),
-        validators=[
-            MinValueValidator(Decimal(0)),
-            MaxValueValidator(Decimal(100))
-        ]
+    )
+    status = models.CharField(
+        max_length=20,
+        chocies=SunbedStatusChoices.choices,
+        default=SunbedStatusChoices.AVAILABLE.value
     )
 
-    beach = models.ForeignKey(
-        to='beach.Beach',
+    zone = models.ForeignKey(
+        to='zone.Zone',
         on_delete=models.CASCADE,
         related_name="sunbeds"
     )
@@ -45,13 +43,13 @@ class Sunbed(models.Model):
         verbose_name = "Sunbed"
         constraints = [
             models.UniqueConstraint(
-                Upper('area'), Upper('identity'), 'beach',
-                name='unique_sunbed_per_beach'
+                Upper('area'), Upper('identity'), 'zone',
+                name='unique_sunbed_per_zone'
             ),
         ]
 
     def __str__(self):
-        return f"Sunbed {self.id} - {self.beach.title} "
+        return f"Sunbed {self.id} - {self.zone.beach.title}"
 
     def check_availability(self, booking_date):
         """

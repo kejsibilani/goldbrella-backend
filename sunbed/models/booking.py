@@ -26,7 +26,7 @@ class SunbedBooking(models.Model):
 
     def clean(self):
         # 1) Sunbed must live on the same beach
-        if self.sunbed.beach_id != self.booking.beach_id:
+        if self.sunbed.zone.beach_id != self.booking.beach_id:
             raise ValidationError("Sunbed and Booking must share the same beach.")
 
         # 2) No double‐booking this sunbed on that date
