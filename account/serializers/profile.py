@@ -4,8 +4,6 @@ from account.models import User
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    role = serializers.SerializerMethodField()
-
     class Meta:
         model = User
         fields = (
@@ -13,11 +11,3 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'address', 'preferred_language'
         )
         read_only_fields = ('email', 'role')
-
-    @staticmethod
-    def get_role(obj):
-        if obj.is_superuser:
-            return 'admin'
-        elif obj.is_staff:
-            return 'staff'
-        return 'guest'

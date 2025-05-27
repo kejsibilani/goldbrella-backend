@@ -3,7 +3,9 @@ from string import digits
 
 import factory
 from django.contrib.auth.models import Group
+from factory import fuzzy
 
+from account.choices import UserRoleChoices
 from account.models import User
 
 
@@ -20,16 +22,11 @@ class UserFactory(factory.django.DjangoModelFactory):
     last_name = factory.Faker('last_name')
     address = factory.Faker('address')
     preferred_language = factory.Faker('language_name')
-    assigned_area = factory.Faker('city')
-    department = factory.Faker('word')
     is_superuser = factory.Faker('boolean')
-    is_staff = factory.Faker('boolean')
     phone_number = factory.LazyFunction(
         lambda: "".join(choices(digits, k=13))
     )
-    office_contact = factory.LazyFunction(
-        lambda: "".join(choices(digits, k=13))
-    )
+    role = fuzzy.FuzzyChoice(choices=UserRoleChoices.values)
 
     @factory.post_generation
     def groups(self, create, extracted, **kwargs):

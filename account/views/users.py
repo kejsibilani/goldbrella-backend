@@ -18,16 +18,20 @@ class UserViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyM
     serializer_class = UserSerializer
     filterset_class = UserFilterSet
     search_fields = [
-        'first_name', 'last_name', 'email',
-        'phone_number', 'office_contact',
+        'first_name', 'last_name',
+        'email', 'phone_number',
     ]
 
     def get_queryset(self):
         request_user = self.request.user
         if request_user.is_superuser:
             return User.objects.all()
-        elif request_user.is_staff:
-            return User.objects.filter(is_staff=False, is_superuser=False)
+        elif request_user.has_role('admin'):
+            return User.objects.exclude(pk=request_user.pk)
+        elif request_user.has_role('supervisor'):
+            return User.objects.filter(role='guest')
+        elif request_user.has_role('staff'):
+            return User.objects.filter(role='guest')
         return User.objects.filter(pk=request_user.pk, is_active=True)
 
     def perform_destroy(self, instance):

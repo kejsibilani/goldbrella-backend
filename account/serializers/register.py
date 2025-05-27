@@ -7,14 +7,11 @@ from account.models import User
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(choices=('guest', 'staff', 'admin'), write_only=True)
-
     class Meta:
         model = User
         fields = (
             'id', 'email', 'password', 'role', 'first_name', 'last_name',
-            'phone_number', 'address', 'preferred_language', 'assigned_area',
-            'department', 'office_contact'
+            'phone_number', 'address', 'preferred_language'
         )
         extra_kwargs = {
             'first_name': {'required': True},
@@ -29,7 +26,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             'email': {
                 'required': True,
                 'validators': [
-                    UniqueValidator(queryset=User.objects.all())
+                    UniqueValidator(queryset=User.objects.all()),
                 ],
             }
         }
@@ -42,12 +39,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         # add condition for adding role
         if not is_superuser and not (role == 'guest'):
             raise serializers.ValidationError({'detail': 'Only guest users can register themselves.'})
-        # is_staff for staff user and is_superuser for admin user
-        if role == 'staff': attrs['is_staff'] = True
-        elif role == 'admin': attrs['is_superuser'] = True
         # add user group
-        group = Group.objects.filter(name__iexact=role)
-        attrs['groups'] = group
+        groups = Group.objects.filter(name__iexact=role)
+        attrs['groups'] = groups
         return attrs
 
     def create(self, validated_data):

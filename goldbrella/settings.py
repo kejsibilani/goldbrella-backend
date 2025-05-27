@@ -193,8 +193,9 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(seconds=int(os.getenv("ACCESS_TOKEN_LIFETIME", default=300))),  # Token expires in 5 minutes
     "REFRESH_TOKEN_LIFETIME": timedelta(seconds=int(os.getenv("REFRESH_TOKEN_LIFETIME", default=86400))), # Token expires in 1 day
+    "TOKEN_OBTAIN_SERIALIZER": "account.serializers.token.TokenObtainSerializer",
     "BLACKLIST_AFTER_ROTATION": True,
-    "ROTATE_REFRESH_TOKENS": True,
+    "ROTATE_REFRESH_TOKENS": False,
 }
 
 
