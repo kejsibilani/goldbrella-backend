@@ -12,4 +12,4 @@ class BeachSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_thumbnail(instance):
-        return instance.images.first().link
+        return instance.images.first().image.url

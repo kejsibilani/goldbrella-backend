@@ -9,25 +9,6 @@ from beach.models import BeachOpeningSeason, Beach, BeachOpeningHour
 
 
 current = make_aware(datetime.now())
-@receiver(post_save, sender=Beach)
-def create_season_for_beach(instance, created, **kwargs):
-    if created: BeachOpeningSeason.objects.get_or_create(
-        beach=instance,
-        defaults={
-            'opening_date': localdate(
-                make_aware(
-                    datetime(current.year, 5, current.day)
-                )
-            ),
-            'closing_date': localdate(
-                make_aware(
-                    datetime(current.year, 9, current.day)
-                )
-            ),
-        }
-    )
-    return
-
 
 @receiver(post_save, sender=BeachOpeningSeason)
 def create_hours_for_season(instance, created, **kwargs):

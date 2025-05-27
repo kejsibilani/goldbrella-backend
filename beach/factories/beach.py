@@ -1,10 +1,13 @@
-from random import randint, sample, choice
+from random import choice
+from random import randint
+from random import sample
 
 import factory
 
-from beach.factories.location import BeachLocationFactory
 from beach.models import Beach
-from services.factories import FacilityFactory, RuleFactory
+from location.factories import LocationFactory
+from services.factories import FacilityFactory
+from services.factories import RuleFactory
 from services.factories.facility import FACILITIES
 from services.factories.rule import RULES
 
@@ -17,7 +20,7 @@ class BeachFactory(factory.django.DjangoModelFactory):
     description = factory.Faker('paragraph', nb_sentences=3)
     latitude = factory.Faker("latitude")
     longitude = factory.Faker("longitude")
-    location = factory.SubFactory(BeachLocationFactory)
+    location = factory.SubFactory(LocationFactory)
 
     # keep track per-location how many titles we've generated
     _title_counters = {}

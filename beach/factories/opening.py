@@ -1,5 +1,9 @@
-from datetime import datetime, date, timedelta, time
-from random import randint, choice
+from datetime import date
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
+from random import choice
+from random import randint
 
 import factory
 
@@ -14,7 +18,7 @@ class BeachOpeningHourFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ('season', 'day',)
 
     season = factory.SubFactory(BeachOpeningSeasonFactory)
-    day = factory.Iterator([c for c in OpeningDayChoices.values])
+    weekday = factory.Iterator([c for c in OpeningDayChoices.values])
     opening_time = factory.LazyFunction(
         lambda: time(
             hour=randint(6, 12),

@@ -1,13 +1,15 @@
-from django_filters.rest_framework import FilterSet, filters
+from django_filters.rest_framework import FilterSet
+from django_filters.rest_framework import filters
 
 from beach.choices import OpeningDayChoices
 from beach.models import BeachOpeningHour
-from helpers.querysets import beach_season_queryset, beach_queryset
+from helpers.querysets import beach_queryset
+from helpers.querysets import beach_season_queryset
 
 
 class BeachOpeningHourFilterSet(FilterSet):
     season = filters.ModelMultipleChoiceFilter(queryset=beach_season_queryset)
-    day = filters.MultipleChoiceFilter(choices=OpeningDayChoices.choices)
+    weekday = filters.MultipleChoiceFilter(choices=OpeningDayChoices.choices)
     opening_time = filters.TimeRangeFilter()
     closing_time = filters.TimeRangeFilter()
     created = filters.DateTimeFromToRangeFilter()

@@ -9,5 +9,6 @@ class BeachOpeningSeasonFactory(factory.django.DjangoModelFactory):
         model = BeachOpeningSeason
 
     beach = factory.SubFactory(BeachFactory)
+    title = factory.Sequence(lambda n: f"Season {n}")
     opening_date = factory.Faker('date_between', start_date='-6m', end_date='-3m')
     closing_date = factory.Faker('date_between', start_date='+3m', end_date='+6m')

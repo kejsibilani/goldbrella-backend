@@ -7,7 +7,11 @@ from beach.models import BeachImage
 class BeachImageFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = BeachImage
-        django_get_or_create = ('beach', 'link',)
 
     beach = factory.SubFactory(BeachFactory)
-    link = factory.Faker('image_url')
+    image = factory.django.ImageField(
+        filename='beach.png',
+        format='PNG',
+        width=800,
+        height=600
+    )

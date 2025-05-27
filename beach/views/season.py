@@ -1,35 +1,40 @@
+from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
-from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from beach.filters import BeachOpeningSeasonFilterSet
-from beach.models import BeachOpeningSeason, Beach
+from beach.models import Beach
+from beach.models import BeachOpeningSeason
 from beach.serializers import BeachOpeningSeasonSerializer
 from helpers.pagination import GenericPagination
 
 
-class BeachOpeningSeasonViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+class BeachOpeningSeasonViewSet(viewsets.ModelViewSet):
     serializer_class = BeachOpeningSeasonSerializer
     filterset_class = BeachOpeningSeasonFilterSet
     queryset = BeachOpeningSeason.objects.all()
     pagination_class = GenericPagination
 
 
-class BeachOpeningSeasonReadViewSet(GenericViewSet):
+class BeachOpeningSeasonListViewSet(GenericViewSet):
     serializer_class = BeachOpeningSeasonSerializer
+    pagination_class = GenericPagination
     queryset = Beach.objects.all()
 
     @action(detail=True, methods=['get'], url_path='opening-seasons')
-    def open_season(self, request, *args, **kwargs):
+    def open_seasons(self, request, *args, **kwargs):
         # fetch instance
         beach = self.get_object()
         # fetch season for the beach
-        instance = getattr(beach, 'season', None)
-        # raise Error if no instance found
-        if not instance:
-            raise ValidationError({'detail': 'No season found for this beach.'})
-        # searialize and return instance
-        serializer = self.get_serializer(instance)
+        queryset = beach.seasons.all()
+        # filter the queryset
+        queryset = self.filter_queryset(queryset)
+        # paginate the response
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)

@@ -1,11 +1,9 @@
 from rest_framework.routers import DefaultRouter
 
 from beach.views import BeachViewSet
-from beach.views import BeachSunbedListViewSet
-from beach.views import BeachInventoryItemListViewSet
 from beach.views import BeachImageViewSet, BeachImageListViewSet
 from beach.views import BeachOpeningHourViewSet, BeachOpeningHourListViewSet
-from beach.views import BeachOpeningSeasonViewSet, BeachOpeningSeasonReadViewSet
+from beach.views import BeachOpeningSeasonViewSet, BeachOpeningSeasonListViewSet
 
 
 app_name = "beach"
@@ -17,9 +15,7 @@ router.register('beaches/opening-hours', BeachOpeningHourViewSet, basename='open
 router.register('beaches/opening-seasons', BeachOpeningSeasonViewSet, basename='season')
 router.register('beaches', BeachImageListViewSet, basename='image-list')
 router.register('beaches', BeachOpeningHourListViewSet, basename='opening-list')
-router.register('beaches', BeachOpeningSeasonReadViewSet, basename='season-read')
-router.register('beaches', BeachSunbedListViewSet, basename='sunbed-list')
-router.register('beaches', BeachInventoryItemListViewSet, basename='inventory-item-list')
+router.register('beaches', BeachOpeningSeasonListViewSet, basename='season-list')
 router.register('beaches', BeachViewSet, basename='beach')
 
 

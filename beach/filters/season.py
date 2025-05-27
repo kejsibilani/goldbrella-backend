@@ -1,4 +1,5 @@
-from django_filters.rest_framework import FilterSet, filters
+from django_filters.rest_framework import FilterSet
+from django_filters.rest_framework import filters
 
 from beach.models import BeachOpeningSeason
 from helpers.querysets import beach_queryset

@@ -3,7 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from beach.filters import BeachImageFilterSet
-from beach.models import BeachImage, Beach
+from beach.models import Beach
+from beach.models import BeachImage
 from beach.serializers import BeachImageSerializer
 from helpers.pagination import GenericPagination
 

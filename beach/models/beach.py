@@ -9,7 +9,7 @@ class Beach(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
 
     location = models.ForeignKey(
-        to='beach.BeachLocation',
+        to='location.Location',
         on_delete=models.CASCADE,
         related_name="beaches"
     )

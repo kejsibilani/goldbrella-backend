@@ -5,7 +5,8 @@ from rest_framework.viewsets import GenericViewSet
 from beach.models import Beach
 from booking.models import InventoryBooking
 from helpers.pagination import GenericPagination
-from inventory.serializers import AvailableInventoryItemSerializer, InventoryQuerySerializer
+from inventory.serializers import AvailableInventoryItemSerializer
+from inventory.serializers import InventoryQuerySerializer
 
 
 class BeachInventoryItemListViewSet(GenericViewSet):

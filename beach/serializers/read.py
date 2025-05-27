@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from beach.models import Beach, BeachLocation, BeachOpeningSeason, BeachOpeningHour
+from beach.models import Beach
+from beach.models import BeachLocation
+from beach.models import BeachOpeningHour
+from beach.models import BeachOpeningSeason
 from helpers.short_func import combine_hours
 
 
