@@ -1,16 +1,16 @@
 from rest_framework import serializers
 
-from beach.models import BeachLocation
+from location.models import Location
 from helpers.validators import CaseInsensitiveUniqueTogetherValidator
 
 
-class BeachLocationSerializer(serializers.ModelSerializer):
+class LocationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BeachLocation
+        model = Location
         fields = "__all__"
         validators = [
             CaseInsensitiveUniqueTogetherValidator(
-                queryset=BeachLocation.objects.all(),
+                queryset=Location.objects.all(),
                 fields=('city', 'country')
             )
         ]

@@ -1,11 +1,11 @@
 import factory
 
-from beach.models import BeachLocation
+from location.models import Location
 
 
-class BeachLocationFactory(factory.django.DjangoModelFactory):
+class LocationFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = BeachLocation
+        model = Location
         django_get_or_create = ('country', 'city',)
 
     # country_names is a dict of code→name; choices are keys

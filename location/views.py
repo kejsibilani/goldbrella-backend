@@ -2,16 +2,16 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 
-from beach.filters import BeachLocationFilterSet
-from beach.models import BeachLocation
-from beach.serializers import BeachLocationSerializer
+from location.filters import LocationFilterSet
+from location.models import Location
+from location.serializers import LocationSerializer
 from helpers.pagination import GenericPagination
 
 
-class BeachLocationViewSet(viewsets.ModelViewSet):
+class LocationViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    serializer_class = BeachLocationSerializer
-    filterset_class = BeachLocationFilterSet
-    queryset = BeachLocation.objects.all()
+    serializer_class = LocationSerializer
+    filterset_class = LocationFilterSet
+    queryset = Location.objects.all()
     pagination_class = GenericPagination
     search_fields = ['city', 'country']

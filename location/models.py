@@ -3,7 +3,7 @@ from django.db.models.functions import Lower
 from pytz import country_names
 
 
-class BeachLocation(models.Model):
+class Location(models.Model):
     country = models.CharField(max_length=5, choices=country_names.items())
     city = models.CharField(max_length=100)
 
@@ -11,8 +11,8 @@ class BeachLocation(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name_plural = "Beach Locations"
-        verbose_name = "Beach Location"
+        verbose_name_plural = "Locations"
+        verbose_name = "Location"
         constraints = [
             models.UniqueConstraint(
                 Lower('city'), 'country',
