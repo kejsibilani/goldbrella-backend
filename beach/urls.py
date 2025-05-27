@@ -1,5 +1,11 @@
 from rest_framework.routers import DefaultRouter
 
+from beach.views import BeachImageListViewSet
+from beach.views import BeachImageViewSet
+from beach.views import BeachOpeningHourListViewSet
+from beach.views import BeachOpeningHourViewSet
+from beach.views import BeachOpeningSeasonListViewSet
+from beach.views import BeachOpeningSeasonViewSet
 from beach.views import BeachViewSet
 from beach.views import BeachImageViewSet, BeachImageListViewSet
 from beach.views import BeachOpeningHourViewSet, BeachOpeningHourListViewSet

@@ -2,11 +2,12 @@ from datetime import datetime
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.timezone import make_aware, localtime, localdate
+from django.utils.timezone import localtime
+from django.utils.timezone import make_aware
 
 from beach.choices import OpeningDayChoices
-from beach.models import BeachOpeningSeason, Beach, BeachOpeningHour
-
+from beach.models import BeachOpeningHour
+from beach.models import BeachOpeningSeason
 
 current = make_aware(datetime.now())
 
