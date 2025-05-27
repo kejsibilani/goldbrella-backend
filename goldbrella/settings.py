@@ -55,7 +55,10 @@ INSTALLED_APPS = [
     # project apps
     'account',
     'services',
+    'location',
     'beach',
+    'zone',
+    'shift',
     'sunbed',
     'booking',
     'payment',
