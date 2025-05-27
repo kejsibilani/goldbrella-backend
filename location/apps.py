@@ -7,4 +7,4 @@ class LocationConfig(AppConfig):
 
     def ready(self):
         try: __import__(self.name, fromlist=['signals'])
-        except: pass
+        except ImportError: pass
