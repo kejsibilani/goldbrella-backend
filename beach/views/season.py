@@ -1,7 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from beach.filters import BeachOpeningSeasonFilterSet
 from beach.models import Beach
@@ -17,7 +16,7 @@ class BeachOpeningSeasonViewSet(viewsets.ModelViewSet):
     pagination_class = GenericPagination
 
 
-class BeachOpeningSeasonListViewSet(GenericViewSet):
+class BeachOpeningSeasonListViewSet(viewsets.GenericViewSet):
     serializer_class = BeachOpeningSeasonSerializer
     pagination_class = GenericPagination
     queryset = Beach.objects.all()
