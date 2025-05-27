@@ -1,14 +1,21 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-
 from account.models import User
-from beach.models import Beach, BeachLocation, BeachOpeningHour, BeachImage, BeachOpeningSeason
-from booking.models import SunbedBooking, Booking
+from beach.models import Beach
+from beach.models import BeachImage
+from beach.models import BeachOpeningHour
+from beach.models import BeachOpeningSeason
+from booking.models import Booking
 from inventory.models import InventoryItem
+from location.models import Location
 from payment.models import BookingPayment
-from services.models import Facility, Rule
+from services.models import Facility
+from services.models import Rule
+from shift.models import Shift
 from sunbed.models import Sunbed
+from sunbed.models import SunbedBooking
+from zone.models import Zone
 
 
 # Register your models here.
@@ -34,11 +41,13 @@ admin.site.register(User, UserAdmin)
 admin.site.register(SunbedBooking, SunbedBookingAdmin)
 admin.site.register(Sunbed, SunbedAdmin)
 
-admin.site.register(Beach)
-admin.site.register(BeachImage)
-admin.site.register(BeachLocation)
+admin.site.register(Shift)
+admin.site.register(Location)
 admin.site.register(BeachOpeningHour)
 admin.site.register(BeachOpeningSeason)
+admin.site.register(BeachImage)
+admin.site.register(Beach)
+admin.site.register(Zone)
 admin.site.register(InventoryItem)
 admin.site.register(Booking)
 admin.site.register(BookingPayment)
