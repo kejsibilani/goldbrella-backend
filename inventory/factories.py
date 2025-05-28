@@ -4,7 +4,6 @@ from factory import fuzzy
 from beach.factories import BeachFactory
 from inventory.models import InventoryItem
 
-
 INVENTORY_LIST = [
     "Umbrella Rental",
     "Towel Rental",
@@ -65,6 +64,6 @@ class InventoryItemFactory(factory.django.DjangoModelFactory):
 
     name = fuzzy.FuzzyChoice(INVENTORY_LIST)
     price = fuzzy.FuzzyDecimal(50.0, 500.0, precision=2)
-    discount_percentage = fuzzy.FuzzyDecimal(0.0, 100.0, precision=2)
+    reusable_item = factory.Faker('boolean')
     quantity = fuzzy.FuzzyInteger(1, 100)
     beach = factory.SubFactory(BeachFactory)

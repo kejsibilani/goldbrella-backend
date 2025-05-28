@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 
-class InventoryBooking(models.Model):
+class BookedInventory(models.Model):
     booking = models.ForeignKey(
         to='booking.Booking',
         on_delete=models.CASCADE,
