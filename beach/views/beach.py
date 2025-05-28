@@ -4,6 +4,8 @@ from rest_framework.filters import SearchFilter
 
 from beach.filters import BeachFilterSet
 from beach.models import Beach
+from beach.serializers import BeachListReadSerializer
+from beach.serializers import BeachReadSerializer
 from beach.serializers import BeachSerializer
 from helpers.pagination import GenericPagination
 
@@ -18,3 +20,10 @@ class BeachViewSet(viewsets.ModelViewSet):
         'title', 'latitude', 'longitude',
         'location__city', 'location__country'
     ]
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return BeachListReadSerializer
+        elif self.action == 'retrieve':
+            return BeachReadSerializer
+        return super().get_serializer_class()
