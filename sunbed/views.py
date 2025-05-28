@@ -7,9 +7,6 @@ from beach.models import Beach
 from helpers.pagination import GenericPagination
 from sunbed.filters import SunbedFilterSet
 from sunbed.models import Sunbed
-from sunbed.models import SunbedBooking
-from sunbed.serializers import AvailableSunbedSerializer
-from sunbed.serializers import SunbedQuerySerializer
 from sunbed.serializers import SunbedSerializer
 
 

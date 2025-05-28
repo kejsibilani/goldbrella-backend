@@ -25,7 +25,7 @@ class Sunbed(models.Model):
     )
     status = models.CharField(
         max_length=20,
-        chocies=SunbedStatusChoices.choices,
+        choices=SunbedStatusChoices.choices,
         default=SunbedStatusChoices.AVAILABLE.value
     )
 
@@ -50,23 +50,3 @@ class Sunbed(models.Model):
 
     def __str__(self):
         return f"Sunbed {self.id} - {self.zone.beach.title}"
-
-    def check_availability(self, booking_date):
-        """
-        Checks the availability of sunbeds for a given booking date.
-
-        If there are any existing bookings for the specified booking
-        date, it returns False. Otherwise, it returns True.
-
-        Args:
-            booking_date (datetime.date): The date for which the sunbed
-            availability needs to be checked.
-
-        Returns:
-            bool: True if sunbed is available for the specified date,
-            otherwise False.
-        """
-        return not self.sunbed_bookings.filter(
-            booking__status__in=['confirmed', 'pending'],
-            booking__booking_date=booking_date
-        ).exists()
