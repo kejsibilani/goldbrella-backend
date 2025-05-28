@@ -6,6 +6,7 @@ from beach.views import BeachOpeningHourListViewSet
 from beach.views import BeachOpeningHourViewSet
 from beach.views import BeachOpeningSeasonListViewSet
 from beach.views import BeachOpeningSeasonViewSet
+from beach.views import BeachSeasonOpeningHourListViewSet
 from beach.views import BeachViewSet
 from sunbed.views import BeachSunbedListViewSet
 from zone.views import BeachZoneListViewSet
@@ -17,6 +18,7 @@ router = DefaultRouter(trailing_slash=False)
 router.register('beaches/images', BeachImageViewSet, basename='image')
 router.register('beaches/opening-hours', BeachOpeningHourViewSet, basename='opening')
 router.register('beaches/opening-seasons', BeachOpeningSeasonViewSet, basename='season')
+router.register('beaches/opening-seasons', BeachSeasonOpeningHourListViewSet, basename='opening-list-season')
 router.register('beaches', BeachImageListViewSet, basename='image-list')
 router.register('beaches', BeachOpeningHourListViewSet, basename='opening-list')
 router.register('beaches', BeachOpeningSeasonListViewSet, basename='season-list')

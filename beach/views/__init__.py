@@ -5,4 +5,5 @@ from .season import BeachOpeningSeasonViewSet
 
 from .images import BeachImageListViewSet
 from .openings import BeachOpeningHourListViewSet
+from .openings import BeachSeasonOpeningHourListViewSet
 from .season import BeachOpeningSeasonListViewSet
