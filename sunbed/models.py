@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.functions import Upper
 
+from booking.choices import BookingStatusChoices
 from sunbed.choices import SunbedStatusChoices
 from sunbed.choices import SunbedTypeChoices
 
@@ -50,3 +51,18 @@ class Sunbed(models.Model):
 
     def __str__(self):
         return f"Sunbed {self.id} - {self.zone.beach.title}"
+
+    def check_availability(self, booking_date, **excluded_kwargs):
+        # extract bookings for booking date for this particular sunbed ignoring the excluded one
+        is_booked = self.sunbed_bookings.filter(
+            booking__booking_date=booking_date,
+            booking__status__in=[
+                BookingStatusChoices.CONFIRMED.value,
+                BookingStatusChoices.RESERVED.value
+            ]
+        ).exclude(**excluded_kwargs).exists()
+
+        # booking exists then sunbed not available
+        if not is_booked:
+            return True
+        return False
