@@ -4,21 +4,21 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.viewsets import GenericViewSet
 
-from beach.models import BeachLocation
-from beach.serializers import BeachLocationSerializer
+from booking.serializers import BookingLocationReadSerializer
 from helpers.pagination import GenericPagination
+from location.models import Location
 
 
 class BookingLocationViewSet(ListModelMixin, GenericViewSet):
     permission_classes = [DjangoModelPermissions]
-    serializer_class = BeachLocationSerializer
+    serializer_class = BookingLocationReadSerializer
     pagination_class = GenericPagination
 
     def get_queryset(self):
         request_user = self.request.user
 
-        if request_user.is_superuser or request_user.is_staff:
-            return BeachLocation.objects.filter(
+        if request_user.has_role('admin') or request_user.has_role('supervisor') or request_user.has_role('staff'):
+            return Location.objects.filter(
                 Q(
                     Q(beaches__bookings__booking_date__lt=localdate()),
                     Q(
@@ -29,7 +29,7 @@ class BookingLocationViewSet(ListModelMixin, GenericViewSet):
                     _connector=Q.AND,
                 )
             ).order_by('-beaches__bookings__booking_date')
-        return BeachLocation.objects.filter(
+        return Location.objects.filter(
             beaches__bookings__booking_date__lt=localdate(),
             beaches__bookings__user=request_user
         ).order_by('-beaches__bookings__booking_date')

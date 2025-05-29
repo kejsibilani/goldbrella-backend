@@ -30,12 +30,11 @@ class SunbedBooking(models.Model):
             raise ValidationError("Sunbed and Booking must share the same beach.")
 
         # 2) No double‐booking this sunbed on that date
-        clashes = SunbedBooking.objects.filter(
-            booking__booking_date=self.booking.booking_date,
-            booking__status__in=['confirmed', 'pending'],
-            sunbed=self.sunbed,
+        is_available = self.sunbed.check_availability(
+            booking_date=self.booking.booking_date,
+            pk=self.pk
         )
-        if self.pk: clashes = clashes.exclude(pk=self.pk)
-        if clashes.exists(): raise ValidationError(
-            f"Sunbed {self.sunbed.identity} is already booked on {self.booking.booking_date}."
-        )
+        if not is_available:
+            raise ValidationError(
+                f"Sunbed {self.sunbed.identity} is already booked on {self.booking.booking_date}."
+            )

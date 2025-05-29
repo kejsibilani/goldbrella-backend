@@ -19,11 +19,10 @@ class Booking(models.Model):
             MinValueValidator(1)
         ]
     )
-
-    user = models.ForeignKey(
-        to='account.User',
-        on_delete=models.CASCADE,
-        related_name="bookings"
+    status = models.CharField(
+        max_length=10,
+        choices=BookingStatusChoices.choices,
+        default=BookingStatusChoices.RESERVED.value
     )
 
     sunbeds = models.ManyToManyField(
@@ -32,12 +31,11 @@ class Booking(models.Model):
         through="booking.SunbedBooking"
     )
 
-    inventory_items = models.ManyToManyField(
-        to='inventory.InventoryItem',
-        related_name='bookings',
-        through='booking.InventoryBooking'
+    user = models.ForeignKey(
+        to='account.User',
+        on_delete=models.CASCADE,
+        related_name="bookings"
     )
-
     booked_by = models.ForeignKey(
         to='account.User',
         on_delete=models.SET_NULL,
@@ -45,12 +43,7 @@ class Booking(models.Model):
         blank=True, null=True
     )
 
-    status = models.CharField(
-        max_length=10,
-        choices=BookingStatusChoices.choices,
-        default=BookingStatusChoices.PENDING.value
-    )
-
+    note = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -100,8 +93,11 @@ class Booking(models.Model):
                 )
 
             conflict_qs = self.sunbeds.through.objects.filter(
-                booking__status__in=['confirmed', 'pending'],
                 booking__booking_date=self.booking_date,
+                booking__status__in=[
+                    BookingStatusChoices.CONFIRMED.value,
+                    BookingStatusChoices.RESERVED.value
+                ],
                 sunbed__in=self.sunbeds.all(),
             )
             if self.pk:
@@ -110,49 +106,6 @@ class Booking(models.Model):
                 errors.setdefault('sunbeds', []).append(
                     "One or more sunbeds are already booked for this date."
                 )
-
-        # —————————————————————————————————————————————
-        # 5) Inventory items must belong to this beach, have qty ≥1,
-        #    and not exceed available stock for that date
-        # —————————————————————————————————————————————
-        for ib in self.inventory_items.through.objects.filter(booking=self):
-            inv = ib.inventory_item
-            # a) same-beach check
-            if inv.beach_id != self.beach_id:
-                errors.setdefault('inventory_items', []).append(
-                    f"Item “{inv.name}” is not sold on beach “{self.beach.title}”."
-                )
-
-            # b) availability check
-            conflict_qs = self.inventory_items.through.objects.filter(
-                inventory_item__in=self.inventory_items.all(),
-                booking__status__in=['confirmed', 'pending'],
-                booking__booking_date=self.booking_date,
-            )
-            if self.pk:
-                conflict_qs = conflict_qs.exclude(booking=self)
-            if conflict_qs.exists():
-                errors.setdefault('inventory_items', []).append(
-                    "One or more inventory items are already booked for this date."
-                )
-
-        # —————————————————————————————————————————————
-        # 6) (Optional) enforce beach seasonality, e.g. within open/close dates
-        # —————————————————————————————————————————————
-        # if hasattr(self.beach.season, 'opening_date') and hasattr(self.beach.season, 'closing_date'):
-        #     # open 9 close 5
-        #     if self.beach.season.opening_date.month > self.beach.season.closing_date.month:
-        #         # 9-12 1-5
-        #         if (
-        #                 (self.beach.season.opening_date.month < self.booking_date.month < 12) or
-        #                 (self.beach.season.closing_date.month > self.booking_date.month > 1)
-        #         ):
-        #
-        #     elif self.beach.season.opening_date.month > self.beach.season.closing_date.month:
-        #         self.booking_date.month
-        #     else:
-        #         ( <= self.booking_date.month <= ):
-        #         raise ValidationError({'booking_date': f"Must book between {self.beach.season.opening_date.strftime('%B')} and {self.beach.season.closing_date.strftime('%B')}."})
 
         if errors:
             raise ValidationError(errors)

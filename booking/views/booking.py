@@ -6,7 +6,8 @@ from rest_framework.permissions import DjangoModelPermissions
 
 from booking.filters import BookingFilterSet
 from booking.models import Booking
-from booking.serializers import BookingSerializer, BookingReadSerializer
+from booking.serializers import BookingReadSerializer
+from booking.serializers import BookingSerializer
 from helpers.pagination import GenericPagination
 
 
@@ -30,9 +31,13 @@ class BookingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         request_user = self.request.user
 
-        if request_user.is_superuser:
+        if request_user.has_role('admin'):
             return Booking.objects.all()
-        elif request_user.is_staff:
+        elif request_user.has_role('supervisor'):
+            return Booking.objects.filter(
+                Q(booked_by=request_user, user=request_user, _connector=Q.OR)
+            )
+        elif request_user.has_role('staff'):
             return Booking.objects.filter(
                 Q(booked_by=request_user, user=request_user, _connector=Q.OR)
             )
