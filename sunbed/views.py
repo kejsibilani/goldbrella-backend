@@ -4,9 +4,13 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from beach.models import Beach
+from booking.choices import BookingStatusChoices
+from booking.models import SunbedBooking
 from helpers.pagination import GenericPagination
 from sunbed.filters import SunbedFilterSet
 from sunbed.models import Sunbed
+from sunbed.serializers import AvailableSunbedSerializer
+from sunbed.serializers import SunbedQuerySerializer
 from sunbed.serializers import SunbedSerializer
 
 
@@ -45,8 +49,11 @@ class BeachSunbedListViewSet(viewsets.GenericViewSet):
         if only_available and booking_date:
             queryset = queryset.exclude(
                 id__in=SunbedBooking.objects.filter(
-                    booking__status__in=['confirmed', 'pending'],
-                    booking__booking_date=booking_date
+                    booking__booking_date=booking_date,
+                    booking__status__in=[
+                        BookingStatusChoices.CONFIRMED.value,
+                        BookingStatusChoices.RESERVED.value
+                    ]
                 ).values_list('sunbed_id', flat=True)
             )
 
@@ -59,9 +66,12 @@ class BeachSunbedListViewSet(viewsets.GenericViewSet):
         elif booking_date and guest_count:
             queryset = queryset.filter(
                 sunbed_bookings__isnull=False,
-                sunbed_bookings__booking__status__in=['confirmed', 'pending'],
                 sunbed_bookings__booking__booking_date=booking_date,
-                sunbed_bookings__booking__guest_count=guest_count
+                sunbed_bookings__booking__guest_count=guest_count,
+                sunbed_bookings__booking__status__in=[
+                    BookingStatusChoices.CONFIRMED.value,
+                    BookingStatusChoices.RESERVED.value
+                ]
             )
 
         # filter queryset
@@ -69,8 +79,8 @@ class BeachSunbedListViewSet(viewsets.GenericViewSet):
         # paginate queryset
         page = self.paginate_queryset(queryset)
         if page is not None:
-            serializer = self.get_serializer(page, many=True, context=context)
+            serializer = self.get_serializer(page, read_only=True, many=True, context=context)
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(queryset, many=True, context=context)
+        serializer = self.get_serializer(queryset, read_only=True, many=True, context=context)
         return Response(serializer.data)
