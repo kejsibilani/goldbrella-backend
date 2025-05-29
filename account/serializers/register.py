@@ -33,7 +33,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         # check request user is superuser
-        is_superuser = getattr(getattr(self.context.get('request'), 'user', None), 'is_superuser', False)
+        context_user = getattr(self.context.get('request'), 'user', None)
+        is_superuser = context_user.has_role('admin') if context_user else False
         # fetch role from attrs
         role = attrs.pop('role', 'guest')
         # add condition for adding role

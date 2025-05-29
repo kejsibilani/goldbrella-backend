@@ -24,10 +24,8 @@ class UserViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyM
 
     def get_queryset(self):
         request_user = self.request.user
-        if request_user.is_superuser:
+        if request_user.has_role('admin'):
             return User.objects.all()
-        elif request_user.has_role('admin'):
-            return User.objects.exclude(pk=request_user.pk)
         elif request_user.has_role('supervisor'):
             return User.objects.filter(role='guest')
         elif request_user.has_role('staff'):

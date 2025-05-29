@@ -4,16 +4,25 @@ from rest_framework import serializers
 from account.models import User
 
 
-class UserForeignKey(serializers.PrimaryKeyRelatedField):
+class UserPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
     def get_queryset(self):
         context_user = self.context["request"].user
-        if context_user.is_superuser:
+
+        if context_user.has_role('admin'):
             return User.objects.all()
-        elif context_user.is_staff:
+        elif context_user.has_role('staff'):
             return User.objects.filter(
                 Q(
-                    Q(pk=context_user.pk),
-                    Q(is_staff=False, is_superuser=False, _connector=Q.AND),
+                    pk=context_user.pk,
+                    role='guest',
+                    _connector=Q.OR
+                )
+            )
+        elif context_user.has_role('supervisor'):
+            return User.objects.filter(
+                Q(
+                    pk=context_user.pk,
+                    role='guest',
                     _connector=Q.OR
                 )
             )
