@@ -3,6 +3,7 @@ from django.db.models import Q
 from account.models import User
 from beach.models import Beach, BeachOpeningSeason
 from booking.models import Booking
+from inventory.models import InventoryItem
 from location.models import Location
 from services.models import Facility, Rule
 from sunbed.models import Sunbed
@@ -37,6 +38,10 @@ def sunbed_queryset(request):
     return Sunbed.objects.all()
 
 
+def inventory_queryset(request):
+    return InventoryItem.objects.all()
+
+
 def user_queryset(request):
     if request.user.has_role('admin'):
         return User.objects.all()
@@ -68,9 +73,13 @@ def staff_queryset(request):
 
 
 def booking_queryset(request):
-    if request.user.is_superuser:
+    if request.user.has_role('admin'):
         return Booking.objects.all()
-    elif request.user.is_staff:
+    elif request.user.has_role('supervisor'):
+        return Booking.objects.filter(
+            Q(booked_by=request.user, user=request.user, _connector=Q.OR)
+        )
+    elif request.user.has_role('staff'):
         return Booking.objects.filter(
             Q(booked_by=request.user, user=request.user, _connector=Q.OR)
         )
