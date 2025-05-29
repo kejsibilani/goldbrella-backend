@@ -6,15 +6,15 @@ from beach.models import Beach
 from beach.models import BeachImage
 from beach.models import BeachOpeningHour
 from beach.models import BeachOpeningSeason
+from booking.models import BookedInventory
 from booking.models import Booking
+from booking.models import SunbedBooking
 from inventory.models import InventoryItem
 from location.models import Location
-from payment.models import BookingPayment
 from services.models import Facility
 from services.models import Rule
 from shift.models import Shift
 from sunbed.models import Sunbed
-from sunbed.models import SunbedBooking
 from zone.models import Zone
 
 
@@ -50,6 +50,6 @@ admin.site.register(Beach)
 admin.site.register(Zone)
 admin.site.register(InventoryItem)
 admin.site.register(Booking)
-admin.site.register(BookingPayment)
+admin.site.register(BookedInventory)
 admin.site.register(Facility)
 admin.site.register(Rule)
