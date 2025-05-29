@@ -17,10 +17,12 @@ class BookingFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Booking
 
+    note = factory.Faker('paragraph')
+    is_anonymous = factory.Faker('boolean')
     beach = factory.SubFactory(BeachFactory)
     booking_date = factory.Faker('date_between', start_date='today', end_date='+30d')
-    user = factory.SubFactory(UserFactory)
     booked_by = factory.SubFactory(UserFactory)
+    user = factory.SubFactory(UserFactory)
 
     @post_generation
     def sunbeds(self, create, extracted, **kwargs):

@@ -1,14 +1,22 @@
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
+from rest_framework.mixins import CreateModelMixin
+from rest_framework.mixins import ListModelMixin
+from rest_framework.permissions import AllowAny
 from rest_framework.permissions import DjangoModelPermissions
 
+from booking.choices import BookingStatusChoices
 from booking.filters import BookingFilterSet
 from booking.models import Booking
+from booking.serializers import AnonymousBookingSerializer
 from booking.serializers import BookingReadSerializer
 from booking.serializers import BookingSerializer
 from helpers.pagination import GenericPagination
+from helpers.permissions import IsAnonymousUser
 
 
 # Create your views here.
@@ -44,4 +52,21 @@ class BookingViewSet(viewsets.ModelViewSet):
         return Booking.objects.filter(user=request_user)
 
     def perform_create(self, serializer):
-        serializer.save(booked_by=self.request.user)
+        serializer.save(booked_by=self.request.user, is_anonymous=False)
+
+
+class AnonymousBookingViewSet(CreateModelMixin, ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = [IsAnonymousUser]
+    serializer_class = AnonymousBookingSerializer
+    pagination_class = GenericPagination
+
+    def get_queryset(self):
+        token = self.request.GET.get('Authorization')
+        if not token: raise PermissionDenied({'token': '`token` not found'})
+        return Booking.objects.filter(is_anonymous=True, token__key=token)
+
+    def perform_create(self, serializer):
+        serializer.save(
+            status=BookingStatusChoices.UNVERIFIED.value,
+            is_anonymous=True
+        )

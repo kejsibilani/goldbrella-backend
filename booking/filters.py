@@ -17,6 +17,8 @@ class BookingFilterSet(FilterSet):
     status = filters.MultipleChoiceFilter(choices=BookingStatusChoices.values)
     created = filters.DateTimeFromToRangeFilter()
     updated = filters.DateTimeFromToRangeFilter()
+    # anonymity of booking
+    is_anonymous = filters.BooleanFilter()
     # beach related fields
     beach_id = filters.ModelMultipleChoiceFilter(queryset=beach_queryset, field_name='beach_id')
     beach = filters.CharFilter(lookup_expr='icontains', field_name='beach__title')

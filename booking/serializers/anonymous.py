@@ -3,20 +3,21 @@ from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from booking.models import Booking
-from booking.serializers.inventory import BookedInventorySerializer
+from booking.serializers import BookedInventorySerializer
+from booking.serializers.user import BookingUserSerializer
 from helpers.fkeys.sunbed import SunbedPrimaryKeyRelatedField
-from helpers.fkeys.user import UserPrimaryKeyRelatedField
 
 
-class BookingSerializer(WritableNestedModelSerializer):
+class AnonymousBookingSerializer(WritableNestedModelSerializer):
+    inventory = BookedInventorySerializer(required=False)
+    booked_by = BookingUserSerializer(required=False)
     sunbeds = SunbedPrimaryKeyRelatedField(many=True)
-    inventory = BookedInventorySerializer()
-    user = UserPrimaryKeyRelatedField()
+    user = BookingUserSerializer()
 
     class Meta:
         model = Booking
         exclude = ('is_anonymous',)
-        read_only_field = ('status', 'booked_by')
+        read_only_field = ('status',)
 
     def validate(self, attrs):
         errors = []
@@ -63,4 +64,7 @@ class BookingSerializer(WritableNestedModelSerializer):
 
         if errors:
             raise serializers.ValidationError({'detail': errors})
+
+        # update booked by to user
+        attrs['booked_by'] = attrs['user']
         return attrs

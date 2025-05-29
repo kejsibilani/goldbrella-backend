@@ -1,3 +1,4 @@
+from rest_framework.permissions import BasePermission
 from rest_framework.permissions import DjangoModelPermissions
 
 class CustomDjangoModelPermissions(DjangoModelPermissions):
@@ -10,3 +11,10 @@ class CustomDjangoModelPermissions(DjangoModelPermissions):
         'PATCH': ['%(app_label)s.change_%(model_name)s'],
         'DELETE': ['%(app_label)s.delete_%(model_name)s'],
     }
+
+
+class IsAnonymousUser(BasePermission):
+    def has_permission(self, request, view):
+        if request.user and request.user.is_anonymous:
+            return True
+        return False
