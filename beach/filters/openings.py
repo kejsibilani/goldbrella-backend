@@ -9,7 +9,7 @@ from helpers.querysets import beach_season_queryset
 
 class BeachOpeningHourFilterSet(FilterSet):
     season = filters.ModelMultipleChoiceFilter(queryset=beach_season_queryset)
-    weekday = filters.MultipleChoiceFilter(choices=OpeningDayChoices.choices)
+    weekday = filters.MultipleChoiceFilter(choices=OpeningDayChoices.values)
     opening_time = filters.TimeRangeFilter()
     closing_time = filters.TimeRangeFilter()
     created = filters.DateTimeFromToRangeFilter()
