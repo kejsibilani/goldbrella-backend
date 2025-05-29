@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'corsheaders',
+    'payments',
     'drf_yasg',
     # project apps
     'account',
@@ -60,9 +61,9 @@ INSTALLED_APPS = [
     'zone',
     'shift',
     'sunbed',
+    'inventory',
     'booking',
     'payment',
-    'inventory',
     'dashboard',
 ]
 
@@ -220,3 +221,7 @@ SWAGGER_SETTINGS = {
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["*"]
+
+# Django Payments
+PAYMENT_HOST = 'localhost:8000'
+PAYMENT_MODEL = 'invoice.BookingPayment'
