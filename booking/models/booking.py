@@ -14,11 +14,6 @@ class Booking(models.Model):
     )
 
     booking_date = models.DateField()
-    guest_count = models.PositiveIntegerField(
-        validators=[
-            MinValueValidator(1)
-        ]
-    )
     status = models.CharField(
         max_length=10,
         choices=BookingStatusChoices.choices,
@@ -70,20 +65,7 @@ class Booking(models.Model):
                 raise ValidationError({'beach': "You cannot change the beach for an existing booking."})
 
         # —————————————————————————————————————————————
-        # 3) guest_count ⇄ sunbeds must match, and ≥ 1
-        # —————————————————————————————————————————————
-        sb_count = (
-            self.sunbeds.through.objects.filter(booking=self).count()
-            if self.pk else
-            self.sunbeds.count()
-        )
-        if sb_count < 1:
-            raise ValidationError({'sunbeds': "At least one sunbed must be booked."})
-        elif sb_count != self.guest_count:
-            raise ValidationError({'guest_count': "Number of guests must match number of sunbeds booked."})
-
-        # —————————————————————————————————————————————
-        # 4) Sunbeds must belong to this beach & not already booked on this date
+        # 3) Sunbeds must belong to this beach & not already booked on this date
         # —————————————————————————————————————————————
         errors = {}
         for sb in (self.sunbeds.all() if self.pk else self.sunbeds.model.objects.filter(bookings=self)):

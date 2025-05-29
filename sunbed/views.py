@@ -1,6 +1,5 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from beach.models import Beach
@@ -41,7 +40,6 @@ class BeachSunbedListViewSet(viewsets.GenericViewSet):
         # filter queryset for booking date and availability and guest count
         only_available = query_serializer.data.get('only_available', False)
         booking_date = query_serializer.data.get('booking_date')
-        guest_count = query_serializer.data.get('guest_count')
 
         # set booking date in context
         context['booking_date'] = booking_date
@@ -55,23 +53,6 @@ class BeachSunbedListViewSet(viewsets.GenericViewSet):
                         BookingStatusChoices.RESERVED.value
                     ]
                 ).values_list('sunbed_id', flat=True)
-            )
-
-            available_sunbeds_count = queryset.count()
-            if guest_count and guest_count > available_sunbeds_count:
-                raise ValidationError(
-                    {'detail': f'Not enough sunbeds available. Only {available_sunbeds_count} left.'}
-                )
-
-        elif booking_date and guest_count:
-            queryset = queryset.filter(
-                sunbed_bookings__isnull=False,
-                sunbed_bookings__booking__booking_date=booking_date,
-                sunbed_bookings__booking__guest_count=guest_count,
-                sunbed_bookings__booking__status__in=[
-                    BookingStatusChoices.CONFIRMED.value,
-                    BookingStatusChoices.RESERVED.value
-                ]
             )
 
         # filter queryset

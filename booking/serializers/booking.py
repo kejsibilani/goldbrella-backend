@@ -28,15 +28,8 @@ class BookingSerializer(WritableNestedModelSerializer):
                 {"booking_date": "Booking date cannot be in the past"}
             )
 
-        # validate sunbeds to guest count
-        sunbeds = attrs.get("sunbeds", self.instance.sunbeds.all() if self.instance else [])
-        guest_count = attrs.get("guest_count", getattr(self.instance, 'guest_count', None))
-        if (guest_count or sunbeds) and guest_count != len(sunbeds):
-            raise serializers.ValidationError(
-                {"sunbeds": "Number of selected sunbeds must be equal to the number of guest"}
-            )
-
         # beach validation on sunbeds
+        sunbeds = attrs.get("sunbeds", self.instance.sunbeds.all() if self.instance else [])
         beach = attrs.get("beach", getattr(self.instance, 'beach', None))
         for sunbed in sunbeds:
             try:
@@ -49,8 +42,8 @@ class BookingSerializer(WritableNestedModelSerializer):
 
             try:
                 if not sunbed.check_availability(
-                    booking_date=booking_date,
-                    booking=self.instance
+                        booking_date=booking_date,
+                        booking=self.instance
                 ): raise serializers.ValidationError(
                     {'sunbeds': f"Sunbed {sunbed.pk} is already booked for {booking_date}"}
                 )

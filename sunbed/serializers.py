@@ -38,32 +38,14 @@ class AvailableSunbedSerializer(serializers.ModelSerializer):
 
 class SunbedQuerySerializer(serializers.Serializer):
     only_available = serializers.BooleanField(default=False)
-    guest_count = serializers.IntegerField(required=False)
     booking_date = serializers.DateField(required=False)
-
-    @staticmethod
-    def validate_guest_count(value):
-        if value < 1:
-            raise serializers.ValidationError({
-                'guest_count': 'Guest count must be greater than or equal to 1.'
-            })
-        return value
 
     def validate(self, data):
         only_available = data.get("only_available")
         booking_date = data.get("booking_date")
-        guest_count = data.get("guest_count")
 
-        if only_available and guest_count and not booking_date:
+        if only_available and not booking_date:
             raise serializers.ValidationError(
-                {'detail': '`only_available` and `guest_count` should be specified with `booking_date`'}
-            )
-        if guest_count and not only_available and not booking_date:
-            raise serializers.ValidationError(
-                {'detail': '`guest_count` should be specified with either `booking_date` or `booking_date` and `only_available`'}
-            )
-        if only_available and not guest_count and not booking_date:
-            raise serializers.ValidationError(
-                {'detail': '`only_available` should be specified with either `booking_date` or `booking_date` and `guest_count`'}
+                {'detail': '`only_available` should be specified with either `booking_date`'}
             )
         return data

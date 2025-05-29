@@ -11,7 +11,6 @@ from helpers.querysets import user_queryset
 
 class BookingFilterSet(FilterSet):
     booking_date = filters.DateFromToRangeFilter()
-    guest_count = filters.NumericRangeFilter()
     user = filters.ModelMultipleChoiceFilter(queryset=user_queryset)
     sunbeds = filters.ModelMultipleChoiceFilter(queryset=sunbed_queryset)
     booked_by = filters.ModelMultipleChoiceFilter(queryset=user_queryset)

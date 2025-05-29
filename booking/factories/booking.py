@@ -19,16 +19,14 @@ class BookingFactory(factory.django.DjangoModelFactory):
 
     beach = factory.SubFactory(BeachFactory)
     booking_date = factory.Faker('date_between', start_date='today', end_date='+30d')
-    guest_count = fuzzy.FuzzyInteger(1, 8)
     user = factory.SubFactory(UserFactory)
     booked_by = factory.SubFactory(UserFactory)
 
     @post_generation
     def sunbeds(self, create, extracted, **kwargs):
         """
-        1) ensure guest_count == number of sunbeds
-        2) sunbeds belong to the same beach
-        3) sunbeds aren’t double‐booked on booking_date
+        1) sunbeds belong to the same beach
+        2) sunbeds aren’t double‐booked on booking_date
         """
         if not create:
             return
@@ -39,7 +37,7 @@ class BookingFactory(factory.django.DjangoModelFactory):
                 self.sunbeds.add(sb)
             return
 
-        needed = self.guest_count
+        needed = randint(1, 3)
 
         # find all sunbeds on this beach not already booked/reserved on this date
         qs = self.sunbeds.model.objects.filter(beach=self.beach).exclude(
@@ -61,33 +59,39 @@ class BookingFactory(factory.django.DjangoModelFactory):
             # this will create the through‐model entry SunbedBooking
             self.sunbeds.add(sb)
 
-    @post_generation
+    @factory.post_generation
     def inventory(self, create, extracted, **kwargs):
         """
-        1) inventory items live on the same beach
-        2) inventory items have enough quantity
-        3) quantity booked == guest_count (or on_demand overrides)
+        Book inventory items so that:
+          - quantity = number of sunbeds on this booking,
+          - if you passed explicit inventory_item instances, each gets that quantity,
+          - otherwise pick between 1 and that quantity of distinct items.
         """
         if not create:
             return
 
-        # if the test explicitly passed inventory_item instances:
+        # how many seats we actually have:
+        booked_count = self.sunbeds.count()
+
+        # if test passed inventory_item instances, use those
         if extracted:
             for inv_item in extracted:
                 BookedInventoryFactory(
                     booking=self,
                     inventory_item=inv_item,
-                    quantity=self.guest_count,
+                    quantity=booked_count,
                     on_demand=False
                 )
             return
 
-        # otherwise pick between 1 and guest_count distinct items
-        needed = randint(1, self.guest_count)
-        InventoryItem = InventoryItemFactory._meta.model
+        # otherwise pick a random number of distinct items
+        needed = randint(1, booked_count)
+        InventoryItemModel = InventoryItemFactory._meta.model
 
-        # find all items on this beach with enough quantity and not booked already
-        qs = InventoryItem.objects.filter(beach=self.beach, quantity__gte=self.guest_count).exclude(
+        qs = InventoryItemModel.objects.filter(
+            beach=self.beach,
+            quantity__gte=booked_count
+        ).exclude(
             booked_inventory__booking__booking_date=self.booking_date,
             booked_inventory__booking__status__in=[
                 BookingStatusChoices.RESERVED.value,
@@ -96,16 +100,15 @@ class BookingFactory(factory.django.DjangoModelFactory):
         )
         available = list(qs)
 
-        # if not enough, create more
         while len(available) < needed:
-            new_item = InventoryItemFactory(beach=self.beach, quantity=self.guest_count)
-            available.append(new_item)
+            available.append(
+                InventoryItemFactory(beach=self.beach, quantity=booked_count)
+            )
 
-        chosen = sample(available, needed)
-        for item in chosen:
+        for item in sample(available, needed):
             BookedInventoryFactory(
                 booking=self,
                 inventory_item=item,
-                quantity=self.guest_count,
+                quantity=booked_count,
                 on_demand=False
             )
