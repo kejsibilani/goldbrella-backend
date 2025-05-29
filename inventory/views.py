@@ -2,12 +2,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
+from rest_framework.response import Response
 
 from beach.models import Beach
 from helpers.pagination import GenericPagination
 from inventory.filters import InventoryItemFilterSet
 from inventory.models import InventoryItem
+from inventory.serializers import AvailableInventoryItemSerializer
 from inventory.serializers import InventoryItemSerializer
+from inventory.serializers import InventoryQuerySerializer
 
 
 # Create your views here.
@@ -37,19 +40,10 @@ class BeachInventoryItemListViewSet(viewsets.GenericViewSet):
         query_serializer = InventoryQuerySerializer(data=request.query_params)
         query_serializer.is_valid(raise_exception=True)
         # filter queryset for booking date and availability and guest count
-        only_available = query_serializer.data.get('only_available', False)
         booking_date = query_serializer.data.get('booking_date')
 
         # set booking date in context
         context['booking_date'] = booking_date
-
-        if only_available and booking_date:
-            queryset = queryset.exclude(
-                id__in=InventoryBooking.objects.filter(
-                    booking__status__in=['confirmed', 'pending'],
-                    booking__booking_date=booking_date
-                ).values_list('inventory_item_id', flat=True)
-            )
 
         # filter queryset
         queryset = self.filter_queryset(queryset)

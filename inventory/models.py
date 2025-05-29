@@ -61,3 +61,18 @@ class InventoryItem(models.Model):
         if self.quantity >= quantity:
             return True
         return False
+
+    def get_available(self, booking_date):
+        # available reusable inventory
+        if self.reusable_item:
+            booked_inventory = self.booked_inventory.filter(
+                booking__booking_date=booking_date,
+                booking__status__in=[
+                    BookingStatusChoices.CONFIRMED.value,
+                    BookingStatusChoices.RESERVED.value
+                ]
+            ).values_list('quantity', flat=True)
+            remaining_inventory = self.quantity - sum(booked_inventory)
+            return remaining_inventory
+        # available non-reusable inventory
+        return self.quantity
