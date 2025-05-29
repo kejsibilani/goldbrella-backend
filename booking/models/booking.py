@@ -1,12 +1,14 @@
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.timezone import localdate
+from simple_history.models import HistoricalRecords
 
 from booking.choices import BookingStatusChoices
 
 
 class Booking(models.Model):
+    _history = HistoricalRecords(related_name="history")
+
     beach = models.ForeignKey(
         to='beach.Beach',
         on_delete=models.CASCADE,
