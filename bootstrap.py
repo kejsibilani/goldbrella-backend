@@ -2,6 +2,7 @@ import os, django
 import traceback
 from random import choice
 
+from location.factories import LocationFactory
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'goldbrella.settings')
 django.setup()
@@ -14,7 +15,6 @@ from django.core.management import call_command
 from account.factories import UserFactory
 from account.settings import GUEST_USER_PERMISSION_SET, STAFF_USER_PERMISSION_SET
 from account.factories import GroupFactory
-from beach.factories import BeachLocationFactory
 from beach.factories import BeachFactory
 from beach.factories import BeachImageFactory
 from booking.factories import BookingFactory
@@ -57,7 +57,7 @@ UserFactory.create(email='guest@xyz.com', is_staff=False, is_superuser=False, gr
 guests = UserFactory.create_batch(49, is_staff=False, is_superuser=False, groups=[guest_group])
 print('..................... GUESTS CREATED .....................')
 # Create Location, Beach and Sunbeds
-locations = BeachLocationFactory.create_batch(15)
+locations = LocationFactory.create_batch(15)
 print('..................... LOCATIONS ADDED .....................')
 for location in locations:
     beaches = BeachFactory.create_batch(2, location=location)
