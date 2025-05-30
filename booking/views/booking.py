@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
@@ -51,6 +52,10 @@ class BookingViewSet(viewsets.ModelViewSet):
             )
         return Booking.objects.filter(user=request_user)
 
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         serializer.save(booked_by=self.request.user, is_anonymous=False)
 
@@ -64,6 +69,10 @@ class AnonymousBookingViewSet(CreateModelMixin, ListModelMixin, viewsets.Generic
         token = self.request.GET.get('Authorization')
         if not token: raise PermissionDenied({'token': '`token` not found'})
         return Booking.objects.filter(is_anonymous=True, token__key=token)
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(
