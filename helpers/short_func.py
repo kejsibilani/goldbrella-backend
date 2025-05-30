@@ -62,3 +62,9 @@ def format_ranges(ranges: List[Dict[str, str]]) -> List[str]:
         day_part = f"{start.title()}" if start == end else f"{start.title()} - {end.title()}"
         formatted.append(f"{r['opening_time'].strftime("%H:%M")} - {r['closing_time'].strftime("%H:%M")} ({day_part})")
     return formatted
+
+
+def nested_getattr(obj, *attrs):
+    for attr in attrs:
+        obj = getattr(obj, attr, None)
+    return obj
