@@ -26,7 +26,7 @@ class AvailableInventoryItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = InventoryItem
         fields = (
-            'name', 'reusable_item', 'price', 'available',
+            'id', 'name', 'reusable_item', 'price', 'available',
             'beach', 'created', 'updated'
         )
 
