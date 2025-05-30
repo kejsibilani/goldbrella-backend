@@ -24,7 +24,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 class SunbedAdmin(admin.ModelAdmin):
-    list_display = ("id", "beach", "price")
+    list_display = ("id", "zone", "price")
     # search_fields = ("beach__title", "status")
     # list_filter = ("beach__title")
     # readonly_fields = ("status",)

@@ -12,4 +12,4 @@ class BeachImageFilterSet(FilterSet):
 
     class Meta:
         model = BeachImage
-        fields = "__all__"
+        exclude = ('image',)
