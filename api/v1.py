@@ -9,6 +9,7 @@ urlpatterns = [
     path('', include(('zone.urls', 'zone'), namespace='zone')),
     path('', include(('sunbed.urls', 'sunbed'), namespace='sunbed')),
     path('', include(('services.urls', 'services'), namespace='services')),
+    path('', include(('complaint.urls', 'complaint'), namespace='complaint')),
     path('', include(('invoice.urls', 'invoice'), namespace='invoice')),
     path('', include(('booking.urls', 'booking'), namespace='booking')),
     path('', include(('inventory.urls', 'inventory'), namespace='inventory')),

@@ -72,6 +72,10 @@ def staff_queryset(request):
     return User.objects.filter(role='staff')
 
 
+def management_queryset(request):
+    return User.objects.filter(Q(Q(role='staff'), Q(role='supervisor'), _connector=Q.OR))
+
+
 def booking_queryset(request):
     if request.user.has_role('admin'):
         return Booking.objects.all()
