@@ -6,6 +6,7 @@ from booking.models import Booking
 from booking.serializers.inventory import BookedInventorySerializer
 from helpers.fkeys.sunbed import SunbedPrimaryKeyRelatedField
 from helpers.fkeys.user import UserPrimaryKeyRelatedField
+from helpers.short_func import nested_getattr
 
 
 class BookingSerializer(WritableNestedModelSerializer):
@@ -54,7 +55,7 @@ class BookingSerializer(WritableNestedModelSerializer):
         for item in inventory:
             if isinstance(item, dict):
                 try:
-                    if getattr(item.get('beach'), 'pk', None) != beach.pk: raise serializers.ValidationError(
+                    if nested_getattr(item.get('inventory_item'), 'beach', 'pk') != beach.pk: raise serializers.ValidationError(
                         {'inventory_items': f"Inventory item {getattr(item.get('inventory_item'), 'pk')} not found in beach {beach.pk}"}
                     )
                 except serializers.ValidationError as ve:
