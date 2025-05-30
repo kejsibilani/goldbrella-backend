@@ -1,3 +1,5 @@
+app_name = 'invoice'
+
 urlpatterns = [
     # path('<int:booking_pk>/pay/', pay_for_booking, name='pay-for-booking'),
     # path('<int:booking_pk>/pay/success/', PaymentSuccessView.as_view(), name='payment-success'),
