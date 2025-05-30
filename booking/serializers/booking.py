@@ -9,8 +9,8 @@ from helpers.fkeys.user import UserPrimaryKeyRelatedField
 
 
 class BookingSerializer(WritableNestedModelSerializer):
+    inventory = BookedInventorySerializer(required=False, many=True)
     sunbeds = SunbedPrimaryKeyRelatedField(many=True)
-    inventory = BookedInventorySerializer()
     user = UserPrimaryKeyRelatedField()
 
     class Meta:
@@ -50,16 +50,22 @@ class BookingSerializer(WritableNestedModelSerializer):
             except serializers.ValidationError as ve:
                 errors.append(ve.detail)
 
-        # beach validation on sunbeds
         inventory = attrs.get("inventory", self.instance.inventory.all() if self.instance else [])
         for item in inventory:
-            try:
-                if item.beach.pk != beach.pk: raise serializers.ValidationError(
-                    {'inventory_items': f"Inventory item {item.pk} not found in beach {beach.pk}"}
-                )
-            except serializers.ValidationError as ve:
-                errors.append(ve.detail)
-                continue
+            if isinstance(item, dict):
+                try:
+                    if getattr(item.get('beach'), 'pk', None) != beach.pk: raise serializers.ValidationError(
+                        {'inventory_items': f"Inventory item {getattr(item.get('inventory_item'), 'pk')} not found in beach {beach.pk}"}
+                    )
+                except serializers.ValidationError as ve:
+                    errors.append(ve.detail)
+            else:
+                try:
+                    if item.beach.pk != beach.pk: raise serializers.ValidationError(
+                        {'inventory_items': f"Inventory item {item.inventory_item.pk} not found in beach {beach.pk}"}
+                    )
+                except serializers.ValidationError as ve:
+                    errors.append(ve.detail)
 
         if errors:
             raise serializers.ValidationError({'detail': errors})
