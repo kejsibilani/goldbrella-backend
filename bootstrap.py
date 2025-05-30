@@ -1,19 +1,24 @@
-import os, django
+import os
 import traceback
 from random import choice
+
+import django
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'goldbrella.settings')
 django.setup()
 
 
-from django.db import connection, DatabaseError
+from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core.management import call_command
+from django.db import DatabaseError
+from django.db import connection
 
-from account.factories import UserFactory
-from account.settings import GUEST_USER_PERMISSION_SET, STAFF_USER_PERMISSION_SET
 from account.factories import GroupFactory
+from account.factories import UserFactory
+from account.settings import GUEST_USER_PERMISSION_SET
+from account.settings import STAFF_USER_PERMISSION_SET
 from beach.factories import BeachFactory
 from beach.factories import BeachImageFactory
 from booking.factories import BookingFactory
@@ -23,11 +28,16 @@ from sunbed.factories import SunbedFactory
 
 
 def clear_database():
+    try:
+        DBUSER = settings.DATABASES.get('default', {}).get('USER', 'postgres')
+    except (KeyError, AttributeError, IndexError):
+        DBUSER = 'postgres'
+
     with connection.cursor() as cursor:
         try:
             cursor.execute('DROP SCHEMA IF EXISTS PUBLIC CASCADE;')
             cursor.execute('CREATE SCHEMA PUBLIC;')
-            cursor.execute('ALTER SCHEMA PUBLIC OWNER TO postgres')
+            cursor.execute(f'ALTER SCHEMA PUBLIC OWNER TO {DBUSER}')
         except DatabaseError: traceback.print_exc()
 
 
