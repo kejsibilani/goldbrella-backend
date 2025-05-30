@@ -1,6 +1,7 @@
 from django_filters.rest_framework import FilterSet
 from django_filters.rest_framework import filters
 
+from helpers.querysets import beach_queryset
 from helpers.querysets import zone_queryset
 from sunbed.choices import SunbedStatusChoices
 from sunbed.choices import SunbedTypeChoices
@@ -16,6 +17,8 @@ class SunbedFilterSet(FilterSet):
     zone = filters.ModelMultipleChoiceFilter(queryset=zone_queryset)
     created = filters.DateTimeFromToRangeFilter()
     updated = filters.DateTimeFromToRangeFilter()
+    # zone beach filter
+    beach = filters.ModelMultipleChoiceFilter(queryset=beach_queryset, field_name='zone__beach')
 
     class Meta:
         model = Sunbed
