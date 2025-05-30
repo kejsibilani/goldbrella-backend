@@ -128,7 +128,7 @@ class Migration(migrations.Migration):
                     "status",
                     models.CharField(
                         choices=[
-                            ("unverified", "Unverified"),
+                            ('partial_reserved', 'Partial Reserved'),
                             ("cancelled", "Cancelled"),
                             ("confirmed", "Confirmed"),
                             ("reserved", "Reserved"),

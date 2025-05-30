@@ -76,6 +76,6 @@ class AnonymousBookingViewSet(CreateModelMixin, ListModelMixin, viewsets.Generic
 
     def perform_create(self, serializer):
         serializer.save(
-            status=BookingStatusChoices.UNVERIFIED.value,
+            status=BookingStatusChoices.PARTIAL_RESERVED.value,
             is_anonymous=True
         )
