@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
+    'simple_history',
     'corsheaders',
     'payments',
     'drf_yasg',
@@ -63,7 +64,10 @@ INSTALLED_APPS = [
     'sunbed',
     'inventory',
     'booking',
-    'payment',
+    'invoice',
+    'review',
+    'complaint',
+    'notification',
     'dashboard',
 ]
 
@@ -76,6 +80,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 ROOT_URLCONF = "goldbrella.urls"
@@ -225,3 +230,15 @@ CORS_ALLOW_HEADERS = ["*"]
 # Django Payments
 PAYMENT_HOST = 'localhost:8000'
 PAYMENT_MODEL = 'invoice.BookingPayment'
+PAYMENT_VARIANTS = {
+    'dummy': ('payments.dummy.DummyProvider', {}),
+    'stripe': (
+        'payments.stripe.StripeProviderV3',
+        {
+            'api_key': os.getenv('STRIPE_API_KEY'),
+            'endpoint_secret': os.getenv('STRIPE_ENDPOINT_SECRET', default=None),
+            'secure_endpoint': not DEBUG,
+            'use_token': True,
+        }
+    ),
+}
