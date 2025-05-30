@@ -2,7 +2,6 @@ import os, django
 import traceback
 from random import choice
 
-from location.factories import LocationFactory
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'goldbrella.settings')
 django.setup()
@@ -19,6 +18,7 @@ from beach.factories import BeachFactory
 from beach.factories import BeachImageFactory
 from booking.factories import BookingFactory
 from inventory.factories import InventoryItemFactory
+from location.factories import LocationFactory
 from payment.factories import BookingPaymentFactory
 from sunbed.factories import SunbedFactory
 
