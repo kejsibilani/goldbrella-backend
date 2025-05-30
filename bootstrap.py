@@ -19,7 +19,6 @@ from beach.factories import BeachImageFactory
 from booking.factories import BookingFactory
 from inventory.factories import InventoryItemFactory
 from location.factories import LocationFactory
-from payment.factories import BookingPaymentFactory
 from sunbed.factories import SunbedFactory
 
 
@@ -74,6 +73,5 @@ for location in locations:
         for _ in range(5):
             guest = choice(guests)
             booking = BookingFactory.create(beach=beach, user=guest, booked_by=guest)
-            BookingPaymentFactory.create(booking=booking)
         print(f'..................... SELF BOOKINGS WITH PAYMENTS FOR {beach.title.upper()} ADDED .....................')
 print(f'..................... DATA SEEDING COMPLETED .....................')
