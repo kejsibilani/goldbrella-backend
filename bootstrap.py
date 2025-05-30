@@ -1,6 +1,8 @@
 import os
 import traceback
 from random import choice
+from random import choices
+from random import randint
 
 import django
 
@@ -25,6 +27,7 @@ from booking.factories import BookingFactory
 from inventory.factories import InventoryItemFactory
 from location.factories import LocationFactory
 from sunbed.factories import SunbedFactory
+from zone.factories import ZoneFactory
 
 
 def clear_database():
@@ -41,6 +44,7 @@ def clear_database():
         except DatabaseError: traceback.print_exc()
 
 
+sunbeds = []
 # Clear the database
 clear_database()
 print('..................... DATABASE CLEARED .....................')
@@ -56,14 +60,17 @@ staff_permissions = Permission.objects.filter(codename__in=STAFF_USER_PERMISSION
 staff_group = GroupFactory.create(name='Guest', permissions=staff_permissions)
 print('..................... GUEST GROUP CREATED .....................')
 # Create Super User
-UserFactory.create(email='admin@xyz.com', is_superuser=True)
+UserFactory.create(email='admin@xyz.com', role='admin')
 print('..................... SUPERUSER CREATED .....................')
-# Create Guest and Staff
-UserFactory.create(email='staff@xyz.com', is_staff=True, is_superuser=False, groups=[staff_group])
-staff = UserFactory.create_batch(9, is_staff=True, is_superuser=False, groups=[staff_group])
+# Create Guest, Staff and Supervisor
+UserFactory.create(email='supervisor@xyz.com', role='supervisor', is_superuser=False, groups=[staff_group])
+supervisor = UserFactory.create_batch(4, role='supervisor', is_superuser=False, groups=[staff_group])
+print('..................... SUPERVISOR CREATED .....................')
+UserFactory.create(email='staff@xyz.com', role='staff', is_superuser=False, groups=[staff_group])
+staff = UserFactory.create_batch(9, role='staff', is_superuser=False, groups=[staff_group])
 print('..................... STAFF CREATED .....................')
-UserFactory.create(email='guest@xyz.com', is_staff=False, is_superuser=False, groups=[guest_group])
-guests = UserFactory.create_batch(49, is_staff=False, is_superuser=False, groups=[guest_group])
+UserFactory.create(email='guest@xyz.com', role='guest', is_superuser=False, groups=[guest_group])
+guests = UserFactory.create_batch(49, role='guest', is_superuser=False, groups=[guest_group])
 print('..................... GUESTS CREATED .....................')
 # Create Location, Beach and Sunbeds
 locations = LocationFactory.create_batch(15)
@@ -74,11 +81,14 @@ for location in locations:
     for beach in beaches:
         BeachImageFactory.create_batch(10, beach=beach)
         print(f'..................... IMAGES FOR {beach.title.upper()} ADDED .....................')
-        SunbedFactory.create_batch(50, beach=beach)
-        print(f'..................... SUNBEDS FOR {beach.title.upper()} ADDED .....................')
         InventoryItemFactory.create_batch(50, beach=beach)
         print(f'..................... INVENTORY ITEMS FOR {beach.title.upper()} ADDED .....................')
-        BookingFactory.create_batch(5, beach=beach, user=choice(guests), booked_by=choice(staff))
+        zones = ZoneFactory.create_batch(2, beach=beach)
+        print(f'..................... ZONES FOR {beach.title.upper()} ADDED .....................')
+        for zone in zones:
+            sunbeds = SunbedFactory.create_batch(50, zone=zone)
+            print(f'..................... SUNBEDS {zone.location.upper()} FOR {beach.title.upper()} ADDED .....................')
+        BookingFactory.create_batch(5, beach=beach, user=choice(guests), booked_by=choice(staff), sunbeds=choices(sunbeds, k=randint(1, 3)))
         print(f'..................... STAFF BOOKINGS FOR {beach.title.upper()} ADDED .....................')
         for _ in range(5):
             guest = choice(guests)
