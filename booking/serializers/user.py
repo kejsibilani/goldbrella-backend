@@ -5,6 +5,8 @@ from account.models import User
 
 
 class BookingUserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+
     class Meta:
         model = User
         fields = (
@@ -13,9 +15,7 @@ class BookingUserSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('role',)
         extra_kwargs = {
-            'email': {
-                'required': True,
-            }
+            'password': {'required': False,},
         }
 
     def create(self, validated_data):
