@@ -53,6 +53,9 @@ class BeachListReadSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('title', 'description')
 
-    @staticmethod
-    def get_thumbnail(instance):
-        return instance.images.first().image.url
+    def get_thumbnail(self, instance):
+        request = self.context.get('request')
+        if request:
+            relative_url = instance.images.first().image.url
+            return request.build_absolute_uri(relative_url)
+        return None
