@@ -19,7 +19,7 @@ class Review(models.Model):
         related_name='review'
     )
     user = models.ForeignKey(
-        to='users.User',
+        to='account.User',
         on_delete=models.SET_NULL,
         related_name='reviews',
         null=True

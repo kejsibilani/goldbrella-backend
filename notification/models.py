@@ -1,7 +1,5 @@
 from django.db import models
 
-from account.views import users
-
 
 # Create your models here.
 class Notification(models.Model):
@@ -9,7 +7,7 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
 
     user = models.ForeignKey(
-        to='users.User',
+        to='account.User',
         on_delete=models.CASCADE,
         related_name='notifications',
     )
