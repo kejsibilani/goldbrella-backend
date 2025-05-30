@@ -42,7 +42,7 @@ class BookingFactory(factory.django.DjangoModelFactory):
         needed = randint(1, 3)
 
         # find all sunbeds on this beach not already booked/reserved on this date
-        qs = self.sunbeds.model.objects.filter(beach=self.beach).exclude(
+        qs = self.sunbeds.model.objects.filter(zone__beach=self.beach).exclude(
             bookings__booking_date=self.booking_date,
             bookings__status__in=[
                 BookingStatusChoices.RESERVED.value,
