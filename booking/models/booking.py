@@ -17,7 +17,7 @@ class Booking(models.Model):
 
     booking_date = models.DateField()
     status = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=BookingStatusChoices.choices,
         default=BookingStatusChoices.RESERVED.value
     )
