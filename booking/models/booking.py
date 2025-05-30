@@ -75,7 +75,7 @@ class Booking(models.Model):
         # —————————————————————————————————————————————
         errors = {}
         for sb in (self.sunbeds.all() if self.pk else self.sunbeds.model.objects.filter(bookings=self)):
-            if sb.beach_id != self.beach_id:
+            if sb.zone.beach_id != self.beach_id:
                 errors.setdefault('sunbeds', []).append(
                     f"Sunbed #{sb.id} does not belong to beach “{self.beach.title}”."
                 )
@@ -83,6 +83,7 @@ class Booking(models.Model):
             conflict_qs = self.sunbeds.through.objects.filter(
                 booking__booking_date=self.booking_date,
                 booking__status__in=[
+                    BookingStatusChoices.PARTIAL_RESERVED.value,
                     BookingStatusChoices.CONFIRMED.value,
                     BookingStatusChoices.RESERVED.value
                 ],

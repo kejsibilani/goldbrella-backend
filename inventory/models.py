@@ -49,6 +49,7 @@ class InventoryItem(models.Model):
             booked_inventory = self.booked_inventory.filter(
                 booking__booking_date=booking_date,
                 booking__status__in=[
+                    BookingStatusChoices.PARTIAL_RESERVED.value,
                     BookingStatusChoices.CONFIRMED.value,
                     BookingStatusChoices.RESERVED.value
                 ]
@@ -68,6 +69,7 @@ class InventoryItem(models.Model):
             booked_inventory = self.booked_inventory.filter(
                 booking__booking_date=booking_date,
                 booking__status__in=[
+                    BookingStatusChoices.PARTIAL_RESERVED.value,
                     BookingStatusChoices.CONFIRMED.value,
                     BookingStatusChoices.RESERVED.value
                 ]

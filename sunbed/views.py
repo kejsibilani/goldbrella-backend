@@ -50,6 +50,7 @@ class ZoneSunbedListViewSet(viewsets.GenericViewSet):
                 id__in=SunbedBooking.objects.filter(
                     booking__booking_date=booking_date,
                     booking__status__in=[
+                        BookingStatusChoices.PARTIAL_RESERVED.value,
                         BookingStatusChoices.CONFIRMED.value,
                         BookingStatusChoices.RESERVED.value
                     ]
@@ -97,6 +98,7 @@ class BeachSunbedListViewSet(viewsets.GenericViewSet):
                 id__in=SunbedBooking.objects.filter(
                     booking__booking_date=booking_date,
                     booking__status__in=[
+                        BookingStatusChoices.PARTIAL_RESERVED.value,
                         BookingStatusChoices.CONFIRMED.value,
                         BookingStatusChoices.RESERVED.value
                     ]

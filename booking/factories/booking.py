@@ -1,7 +1,7 @@
-from random import randint, sample
+from random import randint
+from random import sample
 
 import factory
-from factory import fuzzy
 from factory import post_generation
 
 from account.factories import UserFactory
@@ -45,8 +45,9 @@ class BookingFactory(factory.django.DjangoModelFactory):
         qs = self.sunbeds.model.objects.filter(zone__beach=self.beach).exclude(
             bookings__booking_date=self.booking_date,
             bookings__status__in=[
-                BookingStatusChoices.RESERVED.value,
+                BookingStatusChoices.PARTIAL_RESERVED.value,
                 BookingStatusChoices.CONFIRMED.value,
+                BookingStatusChoices.RESERVED.value
             ],
         )
         available = list(qs)
@@ -96,8 +97,9 @@ class BookingFactory(factory.django.DjangoModelFactory):
         ).exclude(
             booked_inventory__booking__booking_date=self.booking_date,
             booked_inventory__booking__status__in=[
-                BookingStatusChoices.RESERVED.value,
+                BookingStatusChoices.PARTIAL_RESERVED.value,
                 BookingStatusChoices.CONFIRMED.value,
+                BookingStatusChoices.RESERVED.value
             ],
         )
         available = list(qs)
