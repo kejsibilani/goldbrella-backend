@@ -2,8 +2,6 @@ from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from account.views import users
-
 
 # Create your models here.
 class Review(models.Model):
