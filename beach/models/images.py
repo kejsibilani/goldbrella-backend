@@ -1,8 +1,10 @@
 from django.db import models
 
+from beach.helpers import beach_image_filepath
+
 
 class BeachImage(models.Model):
-    image = models.ImageField()
+    image = models.ImageField(upload_to=beach_image_filepath)
 
     beach = models.ForeignKey(
         to='beach.Beach',
