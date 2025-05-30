@@ -9,8 +9,8 @@ from zone.models import Zone
 
 class ZoneFilterSet(FilterSet):
 
-    supervisor = filters.ModelMultipleChoiceFilter(choices=supervisor_queryset)
-    beach = filters.ModelMultipleChoiceFilter(chocies=beach_queryset)
+    supervisor = filters.ModelMultipleChoiceFilter(queryset=supervisor_queryset)
+    beach = filters.ModelMultipleChoiceFilter(queryset=beach_queryset)
     location = filters.MultipleChoiceFilter(choices=ZoneLocationChoices.values)
     created = filters.DateTimeFromToRangeFilter()
     updated = filters.DateTimeFromToRangeFilter()
