@@ -7,6 +7,7 @@ from beach.serializers.season import BeachOpeningSeasonSerializer
 from location.serializers import LocationSerializer
 from services.serializers import FacilitySerializer
 from services.serializers import RuleSerializer
+from sunbed.models import Sunbed
 
 
 class BeachReadSerializer(serializers.ModelSerializer):
@@ -32,11 +33,11 @@ class BeachReadSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_sunbed_count(instance):
-        return instance.sunbeds.count()
+        return Sunbed.objects.filter(zone__beach=instance).count()
 
     @staticmethod
     def get_lowest_sunbed_price(instance):
-        return instance.sunbeds.order_by('price').first().price
+        return getattr(Sunbed.objects.filter(zone__beach=instance).order_by('price').first(), 'price')
 
 
 class BeachListReadSerializer(serializers.ModelSerializer):
