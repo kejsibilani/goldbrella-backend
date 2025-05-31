@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
 from account.models import User
@@ -88,3 +89,11 @@ def booking_queryset(request):
             Q(booked_by=request.user, user=request.user, _connector=Q.OR)
         )
     return Booking.objects.filter(user=request.user)
+
+
+def complaint_related_queryset(request):
+    return ContentType.objects.filter(
+        model__in=[
+            'inventoryitem', 'sunbed'
+        ]
+    )
