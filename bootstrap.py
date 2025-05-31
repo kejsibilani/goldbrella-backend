@@ -60,7 +60,7 @@ staff_permissions = Permission.objects.filter(codename__in=STAFF_USER_PERMISSION
 staff_group = GroupFactory.create(name='Guest', permissions=staff_permissions)
 print('..................... GUEST GROUP CREATED .....................')
 # Create Super User
-UserFactory.create(email='admin@xyz.com', role='admin')
+UserFactory.create(email='admin@xyz.com', role='admin', is_superuser=True)
 print('..................... SUPERUSER CREATED .....................')
 # Create Guest, Staff and Supervisor
 UserFactory.create(email='supervisor@xyz.com', role='supervisor', is_superuser=False, groups=[staff_group])
