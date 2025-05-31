@@ -9,9 +9,9 @@ from helpers.querysets import management_queryset
 
 class ComplaintFilterSet(FilterSet):
     creator = filters.ModelMultipleChoiceFilter(queryset=management_queryset)
-    status = filters.MultipleChoiceFilter(choices=ComplaintStatusChoices.values)
+    status = filters.MultipleChoiceFilter(choices=ComplaintStatusChoices.choices)
     details = filters.CharFilter(lookup_expr='icontains')
-    related_content_type = filters.MultipleChoiceFilter(queryset=complaint_related_queryset)
+    related_content_type = filters.ModelMultipleChoiceFilter(queryset=complaint_related_queryset)
     related_object_id = filters.NumericRangeFilter()
     created = filters.DateTimeFromToRangeFilter()
     updated = filters.DateTimeFromToRangeFilter()

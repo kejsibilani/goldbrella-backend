@@ -11,7 +11,7 @@ class ZoneFilterSet(FilterSet):
 
     supervisor = filters.ModelMultipleChoiceFilter(queryset=supervisor_queryset)
     beach = filters.ModelMultipleChoiceFilter(queryset=beach_queryset)
-    location = filters.MultipleChoiceFilter(choices=ZoneLocationChoices.values)
+    location = filters.MultipleChoiceFilter(choices=ZoneLocationChoices.choices)
     created = filters.DateTimeFromToRangeFilter()
     updated = filters.DateTimeFromToRangeFilter()
 

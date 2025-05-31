@@ -10,8 +10,8 @@ from sunbed.models import Sunbed
 
 class SunbedFilterSet(FilterSet):
     price = filters.NumericRangeFilter()
-    sunbed_type = filters.MultipleChoiceFilter(choices=SunbedTypeChoices.values)
-    status = filters.MultipleChoiceFilter(choices=SunbedStatusChoices.values)
+    sunbed_type = filters.MultipleChoiceFilter(choices=SunbedTypeChoices.choices)
+    status = filters.MultipleChoiceFilter(choices=SunbedStatusChoices.choices)
     area = filters.CharFilter(lookup_expr='icontains')
     identity = filters.CharFilter(lookup_expr='icontains')
     zone = filters.ModelMultipleChoiceFilter(queryset=zone_queryset)

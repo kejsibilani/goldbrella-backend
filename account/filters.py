@@ -9,7 +9,7 @@ class UserFilterSet(FilterSet):
     phone_number = filters.CharFilter(lookup_expr='icontains')
     address = filters.CharFilter(lookup_expr='icontains')
     preferred_language = filters.CharFilter(lookup_expr='icontains')
-    role = filters.MultipleChoiceFilter(choices=UserRoleChoices.values)
+    role = filters.MultipleChoiceFilter(choices=UserRoleChoices.choices)
     date_joined = filters.DateTimeFromToRangeFilter()
     is_superuser = filters.BooleanFilter()
     is_active = filters.BooleanFilter()

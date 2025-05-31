@@ -14,7 +14,7 @@ class BookingFilterSet(FilterSet):
     user = filters.ModelMultipleChoiceFilter(queryset=user_queryset)
     sunbeds = filters.ModelMultipleChoiceFilter(queryset=sunbed_queryset)
     booked_by = filters.ModelMultipleChoiceFilter(queryset=user_queryset)
-    status = filters.MultipleChoiceFilter(choices=BookingStatusChoices.values)
+    status = filters.MultipleChoiceFilter(choices=BookingStatusChoices.choices)
     created = filters.DateTimeFromToRangeFilter()
     updated = filters.DateTimeFromToRangeFilter()
     # anonymity of booking
