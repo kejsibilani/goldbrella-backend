@@ -68,3 +68,12 @@ def nested_getattr(obj, *attrs):
     for attr in attrs:
         obj = getattr(obj, attr, None)
     return obj
+
+
+def crud(model_name: str, c: bool = True, r: bool = True, u: bool = True, d: bool = True):
+    perms = []
+    if c: perms.append(f'add_{model_name}')
+    if r: perms.append(f'view_{model_name}')
+    if u: perms.append(f'change_{model_name}')
+    if d: perms.append(f'delete_{model_name}')
+    return perms
