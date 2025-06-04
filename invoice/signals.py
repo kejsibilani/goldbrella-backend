@@ -1,18 +1,32 @@
-# # booking/signals.py
-# from django.dispatch import receiver
-# from payments.signals import status_changed
-# from payments import PaymentStatus
-#
-# from booking.choices import BookingStatusChoices
-#
-# @receiver(status_changed)
-# def on_payment_status_changed(sender, instance, **kwargs):
-#     if instance.status == PaymentStatus.CONFIRMED:
-#         # mark booking confirmed
-#         booking = instance.booking
-#         booking.status = BookingStatusChoices.CONFIRMED.value
-#         booking.save()
-#
-#         # # create invoice if not existing
-#         # if not hasattr(booking, 'invoice'):
-#         #     generate_invoice(booking)
+from decimal import Decimal
+
+from django.db.models.signals import post_save
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+from booking.models import Booking
+from invoice.choices import PaymentMethodChoices
+from invoice.choices import PaymentStatusChoices
+from invoice.models import BookingInvoice
+
+
+@receiver(pre_save, sender=BookingInvoice)
+def update_invoice_status(instance, **kwargs):
+    if instance.paid_amount == Decimal(0):
+        setattr(instance, 'payment_status', PaymentStatusChoices.UNPAID.value)
+    elif instance.paid_amount == instance.total_amount:
+        setattr(instance, 'payment_status', PaymentStatusChoices.PAID.value)
+    elif 0 < instance.paid_amount < instance.total_amount:
+        setattr(instance, 'payment_status', PaymentStatusChoices.PARTIAL_PAID.value)
+    return
+
+
+@receiver(post_save, sender=Booking)
+def create_invoice_for_booking(instance, created, **kwargs):
+    if created: BookingInvoice.objects.get_or_create(
+        booking=instance,
+        defaults={
+            'payment_method': PaymentMethodChoices.STRIPE.value,
+            'paid_amount': 0,
+        }
+    )
