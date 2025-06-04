@@ -24,5 +24,5 @@ class BookingInvoiceSerializer(serializers.ModelSerializer):
         paid_amount = data.pop('paid_amount', Decimal(0))
 
         if paid_amount and payment_method != PaymentMethodChoices.CASH.value:
-            raise serializers.ValidationError({'paid_amount': 'Payment payment is not cash.'})
+            raise serializers.ValidationError({'paid_amount': 'Payment method is not cash.'})
         return data
