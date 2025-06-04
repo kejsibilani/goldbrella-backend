@@ -23,6 +23,7 @@ from account.settings import GUEST_USER_PERMISSION_SET
 from account.settings import STAFF_USER_PERMISSION_SET
 from beach.factories import BeachFactory
 from beach.factories import BeachImageFactory
+from beach.factories import BeachOpeningSeasonFactory
 from booking.factories import BookingFactory
 from inventory.factories import InventoryItemFactory
 from location.factories import LocationFactory
@@ -81,6 +82,8 @@ for location in locations:
     for beach in beaches:
         BeachImageFactory.create_batch(10, beach=beach)
         print(f'..................... IMAGES FOR {beach.title.upper()} ADDED .....................')
+        BeachOpeningSeasonFactory.create_batch(2, beach=beach)
+        print(f'..................... SEASONS FOR {beach.title.upper()} ADDED .....................')
         InventoryItemFactory.create_batch(50, beach=beach)
         print(f'..................... INVENTORY ITEMS FOR {beach.title.upper()} ADDED .....................')
         zones = ZoneFactory.create_batch(2, beach=beach)
