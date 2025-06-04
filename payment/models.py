@@ -1,45 +1,45 @@
-from uuid import uuid4
+from decimal import Decimal
+from typing import Iterable
 
 from django.db import models
+from django.urls import reverse
+from payments import PurchasedItem
+from payments.models import BasePayment
 
-from payment.choices import PaymentMethodChoices, PaymentStatusChoices
 
-
-# Create your models here.
-class BookingPayment(models.Model):
+class BookingPayment(BasePayment):
     booking = models.ForeignKey(
         to='booking.Booking',
         on_delete=models.CASCADE,
-        related_name="payments"
+        related_name='payments',
     )
-
-    transaction_id = models.CharField(max_length=150, default=uuid4)
-    payment_method = models.CharField(max_length=100, choices=PaymentMethodChoices.choices)
-    payment_status = models.CharField(
-        max_length=10,
-        choices=PaymentStatusChoices.choices,
-        default=PaymentStatusChoices.PENDING.value
-    )
-    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    @property
-    def total_amount(self):
-        sunbeds_price = sum(self.booking.sunbeds.values_list('price', flat=True))
-        inventory_price = sum(self.booking.inventory_items.values_list('price', flat=True))
-        return sunbeds_price + inventory_price
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def get_failure_url(self) -> str:
+        # Return a URL where users are redirected after
+        # they fail to complete a payment:
+        return reverse('booking:payment-failure', args=[self.booking.pk])
+
+    def get_success_url(self) -> str:
+        # Return a URL where users are redirected after
+        # they successfully complete a payment:
+        return reverse('booking:payment-success', args=[self.booking.pk])
+
+    def get_purchased_items(self) -> Iterable[PurchasedItem]:
+        # Return items that will be included in this payment.
+        yield PurchasedItem(
+            name='The Hound of the Baskervilles',
+            sku='BSKV',
+            quantity=9,
+            price=Decimal(10),
+            currency='USD',
+        )
+
     class Meta:
-        verbose_name_plural = "Booking Payments"
-        verbose_name = "Booking Payment"
-        constraints = [
-            models.UniqueConstraint(
-                fields=['booking', 'transaction_id'],
-                name='unique_booking_payment_transaction'
-            )
-        ]
+        verbose_name_plural = 'Booking Payments'
+        verbose_name = 'Booking Payment'
 
     def __str__(self):
-        return f"{self.booking.user.username} - {self.method} - {self.amount}",
+        return f'Payment for booking {self.booking.pk}'

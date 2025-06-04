@@ -32,6 +32,18 @@ class BookingInvoice(models.Model):
         max_length=20
     )
 
+    @property
+    def total_amount(self):
+        sunbeds_price = sum(self.booking.sunbeds.values_list('price', flat=True))
+        inventory_price = sum([
+            price * quantity
+            for price, quantity in self.booking.inventory.values_list(
+                'inventory_item__price', 'quantity',
+                flat=True
+            )
+        ])
+        return sunbeds_price + inventory_price
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
