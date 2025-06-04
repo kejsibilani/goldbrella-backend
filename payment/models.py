@@ -14,9 +14,6 @@ class BookingPayment(BasePayment):
         related_name='payments',
     )
 
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
     def get_failure_url(self) -> str:
         # Return a URL where users are redirected after
         # they fail to complete a payment:
