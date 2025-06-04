@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from account.models import User
+from shift.serializers import ShiftSerializer
 
 
 class UserDeletionQuerySerializer(serializers.Serializer):
@@ -9,10 +10,12 @@ class UserDeletionQuerySerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    shift = ShiftSerializer(read_only=True)
+
     class Meta:
         model = User
         fields = (
             'id', 'email', 'first_name', 'last_name', 'role',
-            'phone_number', 'address', 'preferred_language',
+            'shift', 'phone_number', 'address', 'preferred_language',
         )
-        read_only_fields = ('email', 'role')
+        read_only_fields = ('email', 'role', 'shift')
