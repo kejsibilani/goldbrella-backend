@@ -1,34 +1,31 @@
-# from decimal import Decimal
-# from django.shortcuts import get_object_or_404, redirect
-# from payments import get_payment_model
-# from booking.models import Booking
-#
-# Payment = get_payment_model()
-#
-# def pay_for_booking(request, booking_pk):
-#     booking = get_object_or_404(Booking, pk=booking_pk)
-#
-#     # calculate your total (e.g. per-sunbed price)
-#     total = sum(sb.price for sb in booking.sunbeds.all())
-#
-#     payment = Payment.objects.create(
-#         variant='default',
-#         description=f'Booking #{booking.pk} at {booking.beach.title}',
-#         total=Decimal(total),
-#         currency='EUR',
-#         billing_first_name=request.user.first_name,
-#         billing_last_name=request.user.last_name,
-#         customer_ip_address=request.META.get('REMOTE_ADDR'),
-#         booking=booking
-#     )
-#     # hands off to the provider (Stripe checkout, PayPal, etc.)
-#     return redirect(payment.get_process_url())
-#
-# # booking/views.py
-# from django.http import FileResponse
-# from .models import Invoice
-#
-# def download_invoice(request, booking_pk):
-#     invoice = get_object_or_404(Invoice, booking__pk=booking_pk)
-#     return FileResponse(invoice.pdf, as_attachment=True,
-#                         filename=f'invoice_{booking_pk}.pdf')
+from django.db.models import Q
+from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import RetrieveModelMixin
+from rest_framework.mixins import UpdateModelMixin
+from rest_framework.viewsets import GenericViewSet
+
+from helpers.pagination import GenericPagination
+from invoice.filters import BookingInvoiceFilterSet
+from invoice.models import BookingInvoice
+from invoice.serializers import BookingInvoiceSerializer
+
+
+class BookingInvoiceViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+    serializer_class = BookingInvoiceSerializer
+    filterset_class = BookingInvoiceFilterSet
+    pagination_class = GenericPagination
+
+    def get_queryset(self):
+        request_user = self.request.user
+
+        if request_user.has_role('admin'):
+            return BookingInvoice.objects.all()
+        elif request_user.has_role('supervisor'):
+            return BookingInvoice.objects.filter(
+                Q(booking__booked_by=request_user, booking__user=request_user, _connector=Q.OR)
+            )
+        elif request_user.has_role('staff'):
+            return BookingInvoice.objects.filter(
+                Q(booking__booked_by=request_user, booking__user=request_user, _connector=Q.OR)
+            )
+        return BookingInvoice.objects.filter(booking__user=request_user)
