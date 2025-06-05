@@ -2,11 +2,17 @@ from django.contrib.auth.models import AnonymousUser as BaseAnonymousUser
 
 
 class AnonymousUser(BaseAnonymousUser):
-    preferred_language = None
-    phone_number = None
+    id = None
+    pk = None
+    role = ""
+    email = ""
+    username = ""
     address = None
-    email = None
-    role = None
+    is_staff = False
+    is_active = False
+    phone_number = None
+    is_superuser = False
+    preferred_language = None
 
     @staticmethod
     def has_role(role: str):
