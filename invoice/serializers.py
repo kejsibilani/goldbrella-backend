@@ -7,6 +7,7 @@ from invoice.models import BookingInvoice
 
 class BookingInvoiceSerializer(serializers.ModelSerializer):
     invoice_items = serializers.SerializerMethodField(read_only=True)
+    total_amount = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = BookingInvoice
@@ -24,3 +25,7 @@ class BookingInvoiceSerializer(serializers.ModelSerializer):
             'sunbeds': sunbeds,
             'inventory': inventory
         }
+
+    @staticmethod
+    def get_total_amount(instance):
+        return instance.total_amount

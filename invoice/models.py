@@ -38,8 +38,7 @@ class BookingInvoice(models.Model):
         inventory_price = sum([
             price * quantity
             for price, quantity in self.booking.inventory.values_list(
-                'inventory_item__price', 'quantity',
-                flat=True
+                'inventory_item__price', 'quantity'
             )
         ])
         return sunbeds_price + inventory_price
