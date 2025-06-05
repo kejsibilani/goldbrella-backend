@@ -17,7 +17,7 @@ class Sunbed(models.Model):
         default=SunbedTypeChoices.STANDARD.value
     )
     area = models.CharField(max_length=20)
-    identity = models.CharField(max_length=5)
+    identity = models.CharField(max_length=8, blank=True)
     price = models.DecimalField(
         max_digits=10, decimal_places=2,
         validators=[

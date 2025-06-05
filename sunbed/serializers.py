@@ -8,6 +8,7 @@ class SunbedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sunbed
         fields = '__all__'
+        read_only_fields = ('identity',)
         validators = [
             CaseInsensitiveUniqueTogetherValidator(
                 queryset=Sunbed.objects.all(),
