@@ -1,8 +1,5 @@
 from django.db.models import Q
-from rest_framework.mixins import ListModelMixin
-from rest_framework.mixins import RetrieveModelMixin
-from rest_framework.mixins import UpdateModelMixin
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from helpers.pagination import GenericPagination
 from invoice.filters import BookingInvoiceFilterSet
@@ -10,7 +7,7 @@ from invoice.models import BookingInvoice
 from invoice.serializers import BookingInvoiceSerializer
 
 
-class BookingInvoiceViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+class BookingInvoiceViewSet(ReadOnlyModelViewSet):
     serializer_class = BookingInvoiceSerializer
     filterset_class = BookingInvoiceFilterSet
     pagination_class = GenericPagination
