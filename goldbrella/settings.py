@@ -257,3 +257,6 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = "UTC"
+
+# Reservation Variables
+RESERVATION_CANCELLATION_INTERVAL = os.getenv('RESERVATION_CANCELLATION_INTERVAL', default=1800)
