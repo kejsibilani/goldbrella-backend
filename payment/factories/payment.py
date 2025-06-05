@@ -1,8 +1,10 @@
-import factory
 from decimal import Decimal
 
-from booking.factories import BookingFactory  # assumes you have a BookingFactory
+import factory
+
+from booking.factories import BookingFactory
 from payment.models import BookingPayment
+
 
 class BookingPaymentFactory(factory.django.DjangoModelFactory):
     """
@@ -19,7 +21,7 @@ class BookingPaymentFactory(factory.django.DjangoModelFactory):
     booking = factory.SubFactory(BookingFactory)
 
     # Required fields inherited from BasePayment (per django-payments usage):
-    variant = factory.LazyAttribute(lambda _: 'default')
+    variant = factory.LazyAttribute(lambda _: 'dummy')
     description = factory.Faker('sentence', nb_words=6)
     total = Decimal('100.00')
     tax = Decimal('10.00')
