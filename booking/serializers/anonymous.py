@@ -90,6 +90,7 @@ class AnonymousBookingSerializer(WritableNestedModelSerializer):
             raise serializers.ValidationError({'detail': errors})
 
         #  update booked by to user
-        self.initial_data['booked_by'] = self.initial_data.get('user')
-        attrs['booked_by'] = attrs['user']
+        if not self.instance:
+            self.initial_data['booked_by'] = self.initial_data.get('user')
+            attrs['booked_by'] = attrs['user']
         return attrs
