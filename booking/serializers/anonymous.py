@@ -12,7 +12,7 @@ from helpers.short_func import nested_getattr
 
 class AnonymousBookingReadSerializer(serializers.ModelSerializer):
     inventory = BookedInventorySerializer(read_only=True, many=True)
-    sunbeds = SunbedPrimaryKeyRelatedField(read_only=True, many=True)
+    sunbeds = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     booked_by = serializers.StringRelatedField(read_only=True)
     user = serializers.StringRelatedField(read_only=True)
 

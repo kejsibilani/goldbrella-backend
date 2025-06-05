@@ -16,7 +16,7 @@ router.register(r'bookings', BookingViewSet, basename='booking')
 
 
 urlpatterns = [
-    path(r'anonymous/bookings', AnonymousBookingView.as_view(), basename='anon-booking'),
+    path(r'anonymous/bookings', AnonymousBookingView.as_view(), name='anon-booking'),
 ]
 
 urlpatterns += router.urls
