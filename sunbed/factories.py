@@ -18,6 +18,6 @@ class SunbedFactory(factory.django.DjangoModelFactory):
     sunbed_type = fuzzy.FuzzyChoice(SunbedTypeChoices.values)
     status = fuzzy.FuzzyChoice(SunbedStatusChoices.values)
     zone = factory.SubFactory(ZoneFactory)
-    # identity = factory.Sequence(
-    #     lambda n: f"{AREAS[n % len(AREAS)]}{(n // len(AREAS)) + 1}"
-    # )
+    identity = factory.Sequence(
+        lambda n: f"{AREAS[n % len(AREAS)]}{(n // len(AREAS)) + 1}"
+    )
