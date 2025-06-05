@@ -2,6 +2,7 @@ from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.response import Response
 
@@ -13,7 +14,7 @@ from shift.serializers import ShiftSerializer
 
 
 # Create your views here.
-class ShiftViewSet(viewsets.ModelViewSet):
+class ShiftViewSet(UpdateModelMixin, viewsets.ReadOnlyModelViewSet):
     permission_classes = [DjangoModelPermissions]
     pagination_class = GenericPagination
     serializer_class = ShiftSerializer
