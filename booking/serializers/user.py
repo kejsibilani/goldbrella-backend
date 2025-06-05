@@ -15,7 +15,10 @@ class BookingUserSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('role',)
         extra_kwargs = {
-            'password': {'required': False,},
+            'password': {
+                'write_only': True,
+                'required': False,
+            },
         }
 
     def create(self, validated_data):
