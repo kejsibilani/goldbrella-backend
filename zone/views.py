@@ -8,6 +8,7 @@ from beach.models import Beach
 from helpers.pagination import GenericPagination
 from zone.filters import ZoneFilterSet
 from zone.models import Zone
+from zone.serializers import ZoneListSerializer
 from zone.serializers import ZoneSerializer
 
 
@@ -15,10 +16,14 @@ from zone.serializers import ZoneSerializer
 class ZoneViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     pagination_class = GenericPagination
-    serializer_class = ZoneSerializer
     filterset_class = ZoneFilterSet
     queryset = Zone.objects.all()
     search_fields = ['location', 'beach__title']
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ZoneListSerializer
+        return ZoneSerializer
 
 
 class BeachZoneListViewSet(viewsets.GenericViewSet):
