@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from beach.models import Beach
+from helpers.short_func import nested_getattr
 
 
 class BeachSerializer(serializers.ModelSerializer):
@@ -12,4 +13,4 @@ class BeachSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_thumbnail(instance):
-        return instance.images.first().image.url
+        return nested_getattr(instance.images.first(), 'image', 'url')

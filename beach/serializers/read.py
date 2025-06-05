@@ -4,6 +4,7 @@ from beach.models import Beach
 from beach.serializers.images import BeachImageSerializer
 from beach.serializers.openings import BeachOpeningHourSerializer
 from beach.serializers.season import BeachOpeningSeasonSerializer
+from helpers.short_func import nested_getattr
 from location.serializers import LocationSerializer
 from services.serializers import FacilitySerializer
 from services.serializers import RuleSerializer
@@ -57,6 +58,6 @@ class BeachListReadSerializer(serializers.ModelSerializer):
     def get_thumbnail(self, instance):
         request = self.context.get('request')
         if request:
-            relative_url = instance.images.first().image.url
+            relative_url = nested_getattr(instance.images.first(), 'image', 'url')
             return request.build_absolute_uri(relative_url)
         return None
