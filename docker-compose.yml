@@ -1,9 +1,17 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:alpine
+    container_name: goldbrella_redis_container
+    restart: on-failure
+    env_file: .env
+    ports:
+      - ${BROKER_PORT}:6379
+
   postgres:
     image: postgres:latest
-    container_name: postgresql_container
+    container_name: goldbrella_postgres_container
     restart: unless-stopped
     env_file: .env
     environment:
@@ -17,7 +25,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: pgadmin_container
+    container_name: goldbrella_pgadmin_container
     restart: unless-stopped
     env_file: .env
     environment:
