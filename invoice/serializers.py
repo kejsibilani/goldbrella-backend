@@ -2,11 +2,15 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
+from booking.serializers.inventory import BookedInventorySerializer
+from booking.serializers.sunbed import BookingSunbedSerializer
 from invoice.choices import PaymentMethodChoices
 from invoice.models import BookingInvoice
 
 
 class BookingInvoiceSerializer(serializers.ModelSerializer):
+    invoice_items = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = BookingInvoice
         fields = '__all__'
@@ -26,3 +30,12 @@ class BookingInvoiceSerializer(serializers.ModelSerializer):
         if paid_amount and payment_method != PaymentMethodChoices.CASH.value:
             raise serializers.ValidationError({'paid_amount': 'Payment method is not cash.'})
         return data
+
+    @staticmethod
+    def get_invoice_items(instance):
+        sunbeds = BookingSunbedSerializer(instance.booking.sunbeds.all(), many=True).data
+        inventory = BookedInventorySerializer(instance.booking.inventory.all(), many=True).data
+        return {
+            'sunbeds': sunbeds,
+            'inventory': inventory
+        }
