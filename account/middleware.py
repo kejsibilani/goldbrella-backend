@@ -6,6 +6,10 @@ from account.user import AnonymousUser
 
 
 class AnonymousUserMiddleware(MiddlewareMixin):
-    def process_request(self, request):
+    @staticmethod
+    def process_request(request):
         if isinstance(request.user, BaseAnonymousUser):
             request.user = SimpleLazyObject(lambda: AnonymousUser())
+
+            if hasattr(request, '_cached_user'):
+                setattr(request, '_cached_user', SimpleLazyObject(lambda: AnonymousUser()))
