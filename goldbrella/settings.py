@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'django_rest_passwordreset',
     'django_celery_results',
     'django_celery_beat',
     'django_filters',
@@ -255,6 +256,17 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = "UTC"
+
+# Password Reset
+DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = os.getenv('PASSWORD_RESET_TOKEN_EXPIRY_TIME', default=24)
+DJANGO_REST_PASSWORDRESET_NO_INFORMATION_LEAKAGE = os.getenv('PASSWORD_RESET_NO_INFORMATION_LEAKAGE', default=False)
+DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
+    "CLASS": "django_rest_passwordreset.tokens.RandomStringTokenGenerator",
+    "OPTIONS": {
+        "min_length": 32,
+        "max_length": 64
+    }
+}
 
 # Reservation Variables
 RESERVATION_CANCELLATION_INTERVAL = os.getenv('RESERVATION_CANCELLATION_INTERVAL', default=1800)
