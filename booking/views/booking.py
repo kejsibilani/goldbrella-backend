@@ -10,7 +10,6 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.response import Response
 
-from booking.choices import BookingStatusChoices
 from booking.filters import BookingFilterSet
 from booking.models import Booking
 from booking.serializers import AnonymousBookingSerializer
@@ -75,10 +74,7 @@ class AnonymousBookingViewSet(CreateModelMixin, ListModelMixin, viewsets.Generic
         return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
-        serializer.save(
-            status=BookingStatusChoices.PARTIAL_RESERVED.value,
-            is_anonymous=True
-        )
+        serializer.save(is_anonymous=True)
 
     def list(self, request, *args, **kwargs):
         instance = self.get_object()
