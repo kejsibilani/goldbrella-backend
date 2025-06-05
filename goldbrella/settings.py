@@ -236,7 +236,8 @@ CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["*"]
 
 # Django Payments
-PAYMENT_HOST = 'localhost:8000'
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
+PAYMENT_HOST = os.getenv('PAYMENT_HOST', default='localhost:8000')
 PAYMENT_MODEL = 'invoice.BookingPayment'
 PAYMENT_VARIANTS = {
     'dummy': ('payments.dummy.DummyProvider', {}),
