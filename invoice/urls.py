@@ -1,11 +1,11 @@
 from rest_framework.routers import DefaultRouter
 
-from invoice.serializers import BookingInvoiceSerializer
+from invoice.views import BookingInvoiceViewSet
 
 app_name = 'invoice'
 
 router = DefaultRouter(trailing_slash=False)
-router.register(r'invoices', BookingInvoiceSerializer, basename='invoice')
+router.register(r'invoices', BookingInvoiceViewSet, basename='invoice')
 
 
 urlpatterns = router.urls
