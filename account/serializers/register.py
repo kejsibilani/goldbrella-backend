@@ -36,7 +36,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         context_user = getattr(self.context.get('request'), 'user', None)
         is_superuser = context_user.has_role('admin') if context_user else False
         # fetch role from attrs
-        role = attrs.pop('role', 'guest')
+        role = attrs.get('role', 'guest')
         # add condition for adding role
         if not is_superuser and not (role == 'guest'):
             raise serializers.ValidationError({'detail': 'Only guest users can register themselves.'})
