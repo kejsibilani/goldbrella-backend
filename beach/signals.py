@@ -6,8 +6,11 @@ from django.utils.timezone import localtime
 from django.utils.timezone import make_aware
 
 from beach.choices import OpeningDayChoices
+from beach.models import Beach
 from beach.models import BeachOpeningHour
 from beach.models import BeachOpeningSeason
+from zone.choices import ZoneLocationChoices
+from zone.models import Zone
 
 current = make_aware(datetime.now())
 
@@ -29,6 +32,20 @@ def create_hours_for_season(instance, created, **kwargs):
                             datetime(current.year, current.month, current.day,20, 0, 0)
                         )
                     ),
+                }
+            )
+    return
+
+
+@receiver(post_save, sender=Beach)
+def create_zones_for_beach(instance, created, **kwargs):
+    if created:
+        for location in ZoneLocationChoices.values:
+            Zone.objects.get_or_create(
+                location=location,
+                beach=instance,
+                defaults={
+                    'supervisor': None
                 }
             )
     return

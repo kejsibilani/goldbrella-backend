@@ -2,6 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
 
 from beach.models import Beach
@@ -13,7 +14,7 @@ from zone.serializers import ZoneSerializer
 
 
 # Create your views here.
-class ZoneViewSet(viewsets.ModelViewSet):
+class ZoneViewSet(UpdateModelMixin, viewsets.ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     pagination_class = GenericPagination
     filterset_class = ZoneFilterSet
