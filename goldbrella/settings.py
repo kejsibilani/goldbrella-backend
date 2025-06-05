@@ -238,7 +238,7 @@ CORS_ALLOW_HEADERS = ["*"]
 # Django Payments
 STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 PAYMENT_HOST = os.getenv('PAYMENT_HOST', default='localhost:8000')
-PAYMENT_MODEL = 'invoice.BookingPayment'
+PAYMENT_MODEL = 'payment.BookingPayment'
 PAYMENT_VARIANTS = {
     'dummy': ('payments.dummy.DummyProvider', {}),
     'stripe': ('payments.stripe.StripeProviderV3', {
