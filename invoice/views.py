@@ -1,4 +1,5 @@
 from django.db.models import Q
+from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from helpers.pagination import GenericPagination
@@ -8,6 +9,7 @@ from invoice.serializers import BookingInvoiceSerializer
 
 
 class BookingInvoiceViewSet(ReadOnlyModelViewSet):
+    permission_classes = [DjangoModelPermissions]
     serializer_class = BookingInvoiceSerializer
     filterset_class = BookingInvoiceFilterSet
     pagination_class = GenericPagination
