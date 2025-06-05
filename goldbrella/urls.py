@@ -23,6 +23,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+
 schema_view = get_schema_view(
     openapi.Info(
         title="GoldBrella API",
@@ -46,6 +47,6 @@ urlpatterns = [
     path('api/docs', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-ui'),
 ]
 
+urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
 if settings.DEBUG:
-    urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
     urlpatterns.extend(static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
