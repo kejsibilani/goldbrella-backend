@@ -7,6 +7,7 @@ from beach.models import BeachOpeningSeason
 class BeachOpeningSeasonFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = BeachOpeningSeason
+        django_get_or_create = ('beach', 'opening_date', 'closing_date')
 
     beach = factory.SubFactory(BeachFactory)
     title = factory.Sequence(lambda n: f"Season {n}")
