@@ -2,10 +2,7 @@ from django.contrib.auth.models import AnonymousUser as BaseAnonymousUser
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
 
-
-class AnonymousUser(BaseAnonymousUser):
-    def has_role(self, role):
-        return False
+from account.user import AnonymousUser
 
 
 class AnonymousUserMiddleware(MiddlewareMixin):
