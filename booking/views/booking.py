@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import get_object_or_404
+from rest_framework.generics import get_object_or_404, RetrieveUpdateDestroyAPIView
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import DjangoModelPermissions
@@ -59,24 +59,3 @@ class BookingViewSet(viewsets.ModelViewSet):
         serializer.save(booked_by=self.request.user, is_anonymous=False)
 
 
-class AnonymousBookingViewSet(CreateModelMixin, ListModelMixin, viewsets.GenericViewSet):
-    permission_classes = [IsAnonymousUser]
-    serializer_class = AnonymousBookingSerializer
-    pagination_class = GenericPagination
-
-    def get_object(self):
-        token = self.request.GET.get('token')
-        if not token: raise PermissionDenied({'token': '`token` not found'})
-        return get_object_or_404(Booking, is_anonymous=True, token__key=token)
-
-    @transaction.atomic
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
-    def perform_create(self, serializer):
-        serializer.save(is_anonymous=True)
-
-    def list(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
