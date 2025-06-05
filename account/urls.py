@@ -1,5 +1,5 @@
-from django.urls import include
 from django.urls import path
+from django_rest_passwordreset.urls import add_reset_password_urls_to_router
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenBlacklistView
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -23,7 +23,8 @@ urlpatterns = [
     path('refresh', TokenRefreshView.as_view(), name='refresh'),
     path('logout', TokenBlacklistView.as_view(), name='logout'),
     path('profile', UserProfileView.as_view(), name='profile'),
-    path('password-reset/', include(('django_rest_passwordreset.urls', 'password_reset'))),
 ]
+
+add_reset_password_urls_to_router(router, base_path='reset-password')
 
 urlpatterns += router.urls
