@@ -11,6 +11,7 @@ urlpatterns = [
     path('', include(('invoice.urls', 'invoice'), namespace='invoice')),
     path('', include(('location.urls', 'location'), namespace='location')),
     path('', include(('notification.urls', 'notification'), namespace='notification')),
+    path('', include(('payment.urls', 'payment'), namespace='payment')),
     path('', include(('review.urls', 'review'), namespace='review')),
     path('', include(('services.urls', 'services'), namespace='services')),
     path('', include(('shift.urls', 'shift'), namespace='shift')),

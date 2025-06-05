@@ -5,8 +5,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistVi
 from account.views import UserRegisterViewSet, UserProfileView, UserViewSet
 
 app_name = "account"
-router = DefaultRouter(trailing_slash=False)
 
+router = DefaultRouter(trailing_slash=False)
 router.register(r'register', UserRegisterViewSet, basename='register')
 router.register(r'users', UserViewSet, basename='user')
 

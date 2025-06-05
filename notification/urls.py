@@ -2,7 +2,6 @@ from rest_framework.routers import DefaultRouter
 
 from notification.views import NotificationViewSet
 
-
 app_name = 'notification'
 
 router = DefaultRouter(trailing_slash=False)

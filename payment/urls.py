@@ -1,7 +1,5 @@
 from rest_framework.routers import DefaultRouter
 
-from payment.views import BookingPaymentViewSet
-
 app_name = 'payment'
 
 router = DefaultRouter(trailing_slash=False)

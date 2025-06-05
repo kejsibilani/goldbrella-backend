@@ -15,7 +15,6 @@ from zone.views import BeachZoneListViewSet
 app_name = "beach"
 
 router = DefaultRouter(trailing_slash=False)
-
 router.register('beaches/images', BeachImageViewSet, basename='image')
 router.register('beaches/opening-hours', BeachOpeningHourViewSet, basename='opening')
 router.register('beaches/opening-seasons', BeachOpeningSeasonViewSet, basename='season')
