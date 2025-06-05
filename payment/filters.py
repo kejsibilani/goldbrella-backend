@@ -1,9 +1,8 @@
-from django_filters.rest_framework import FilterSet, filters
-from django.contrib.auth import get_user_model
-from booking.models import Booking
-from payment.models import BookingPayment
+from django_filters.rest_framework import FilterSet
+from django_filters.rest_framework import filters
 
-User = get_user_model()
+from helpers.querysets import booking_queryset
+from payment.models import BookingPayment
 
 
 class BookingPaymentFilterSet(FilterSet):
@@ -16,7 +15,6 @@ class BookingPaymentFilterSet(FilterSet):
     booking = filters.ModelMultipleChoiceFilter(queryset=booking_queryset)
 
     # BasePayment fields (django-payments) – common filters:
-
     variant = filters.CharFilter(lookup_expr='icontains')
     description = filters.CharFilter(lookup_expr='icontains')
     currency = filters.CharFilter(lookup_expr='icontains')
