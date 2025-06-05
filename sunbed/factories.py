@@ -14,9 +14,6 @@ class SunbedFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ('area', 'identity', 'zone',)
 
     area = factory.Sequence(lambda n: AREAS[n % len(AREAS)])
-    identity = factory.Sequence(
-        lambda n: f"{AREAS[n % len(AREAS)]}{(n // len(AREAS)) + 1}"
-    )
     price = fuzzy.FuzzyDecimal(50.0, 5000.0, precision=2)
     sunbed_type = fuzzy.FuzzyChoice(SunbedTypeChoices.values)
     status = fuzzy.FuzzyChoice(SunbedStatusChoices.values)
