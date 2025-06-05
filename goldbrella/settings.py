@@ -240,15 +240,12 @@ PAYMENT_HOST = 'localhost:8000'
 PAYMENT_MODEL = 'invoice.BookingPayment'
 PAYMENT_VARIANTS = {
     'dummy': ('payments.dummy.DummyProvider', {}),
-    'stripe': (
-        'payments.stripe.StripeProviderV3',
-        {
-            'api_key': os.getenv('STRIPE_API_KEY'),
-            'endpoint_secret': os.getenv('STRIPE_ENDPOINT_SECRET', default=None),
-            'secure_endpoint': not DEBUG,
-            'use_token': True,
-        }
-    ),
+    'stripe': ('payments.stripe.StripeProviderV3', {
+        'api_key': os.getenv('STRIPE_API_KEY'),
+        'endpoint_secret': os.getenv('STRIPE_ENDPOINT_SECRET', default=None),
+        'secure_endpoint': not DEBUG,
+        'use_token': True,
+    }),
 }
 
 # Django Celery Beat
