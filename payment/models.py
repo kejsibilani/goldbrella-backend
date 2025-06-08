@@ -17,21 +17,24 @@ class BookingPayment(BasePayment):
     def get_failure_url(self) -> str:
         # Return a URL where users are redirected after
         # they fail to complete a payment:
-        return reverse('booking:payment-failure', args=[self.booking.pk])
+        return reverse('payment:payment-failure', args=[self.booking.pk])
 
     def get_success_url(self) -> str:
         # Return a URL where users are redirected after
         # they successfully complete a payment:
-        return reverse('booking:payment-success', args=[self.booking.pk])
+        return reverse('payment:payment-success', args=[self.booking.pk])
 
     def get_purchased_items(self) -> Iterable[PurchasedItem]:
         # Return items that will be included in this payment.
         yield PurchasedItem(
-            name='The Hound of the Baskervilles',
-            sku='BSKV',
-            quantity=9,
-            price=Decimal(10),
-            currency='USD',
+            price=Decimal(self.booking.invoice.total_amount),
+            sku=self.booking.invoice.invoice_number,
+            currency=self.booking.invoice.currency,
+            name=f'Booking #{self.booking.pk}',
+            tax_rate=Decimal(
+                (self.booking.invoice.tax_amount / self.booking.invoice.total_amount * 100)
+            ),
+            quantity=1
         )
 
     class Meta:

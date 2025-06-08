@@ -18,7 +18,12 @@ class BookingInvoice(models.Model):
         related_name='invoice',
     )
 
+    currency = models.CharField(max_length=3, default='EUR')
     paid_amount = models.DecimalField(
+        max_digits=10, decimal_places=2,
+        validators=[MinValueValidator(0.0)]
+    )
+    tax_amount = models.DecimalField(
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.0)]
     )
