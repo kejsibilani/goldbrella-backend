@@ -1,4 +1,7 @@
+from mimetypes import guess_type
 from typing import List, Dict
+
+from django.core.files import File
 
 
 def combine_hours(hours: List[Dict[str, str]]) -> List[Dict[str, str]]:
@@ -77,3 +80,10 @@ def crud(model_name: str, c: bool = True, r: bool = True, u: bool = True, d: boo
     if u: perms.append(f'change_{model_name}')
     if d: perms.append(f'delete_{model_name}')
     return perms
+
+
+def get_file_type_by_extension(file: File):
+    mime_type, encoding = guess_type(
+        file.name
+    )
+    return mime_type
