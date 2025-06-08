@@ -5,10 +5,11 @@ from django.utils.translation import gettext_lazy as _
 
 from account.choices import UserRoleChoices
 from account.managers import UserManager
+from account.mixins import PermissionMixin
 
 
 # Create your models here.
-class User(AbstractUser):
+class User(PermissionMixin, AbstractUser):
     username_validator = UnicodeUsernameValidator()
 
     username = models.CharField(

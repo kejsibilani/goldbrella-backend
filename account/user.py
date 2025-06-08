@@ -1,7 +1,9 @@
 from django.contrib.auth.models import AnonymousUser as BaseAnonymousUser
 
+from account.mixins import PermissionMixin
 
-class AnonymousUser(BaseAnonymousUser):
+
+class AnonymousUser(PermissionMixin, BaseAnonymousUser):
     id = None
     pk = None
     role = ""
@@ -17,3 +19,7 @@ class AnonymousUser(BaseAnonymousUser):
     @staticmethod
     def has_role(role: str):
         return False
+
+    @staticmethod
+    def get_full_name():
+        return ""
