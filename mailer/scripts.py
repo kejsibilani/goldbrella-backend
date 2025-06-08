@@ -17,9 +17,22 @@ class Mailer:
     _base_content_path = settings.BASE_DIR / 'mailer' / 'templates' / 'content'
 
     def __init__(self):
+        """
+        Mailer instance to schedule the emails in celery.
+        """
         self.attachments = []
 
     def __call__(self, to: list, template_name: str, from_email: tuple = None, system_mail: bool = True, attachments: list = None, **context):
+        """
+        Register the email to database and schedule it for sending.
+
+        :param to: list of email addresses
+        :param template_name: basename of subject (html) and content (text) files
+        :param from_email: tuple of sender email address
+        :param system_mail: mail is sent by system
+        :param attachments: list of Django file objects
+        :param context: dictionary to pass in template for proper rendering
+        """
         self.sender = (from_email[0] if isinstance(from_email, (tuple, list)) else from_email) or settings.DEFAULT_FROM_EMAIL[0]
         self.receivers = to
 
@@ -68,6 +81,11 @@ class Mailer:
         )
 
     def add_attachment(self, file: File):
+        """
+        Convert the attachment files to dictionary for adding in email
+
+        :param file: Django file object
+        """
         filename = file.name
         file_obj = file.open(mode='rb')
         content = file_obj.read()
@@ -80,6 +98,9 @@ class Mailer:
         })
 
     def clear_attachments(self):
+        """
+        Clear the attachments list
+        """
         self.attachments = []
 
 
