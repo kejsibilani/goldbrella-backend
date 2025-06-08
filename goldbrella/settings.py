@@ -72,7 +72,9 @@ INSTALLED_APPS = [
     'review',
     'complaint',
     'notification',
+    # utility apps
     'dashboard',
+    'mailer',
 ]
 
 MIDDLEWARE = [
@@ -237,14 +239,13 @@ CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["*"]
 
 # Django Payments
-STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 PAYMENT_HOST = os.getenv('PAYMENT_HOST', default='localhost:8000')
 PAYMENT_MODEL = 'payment.BookingPayment'
 PAYMENT_VARIANTS = {
     'dummy': ('payments.dummy.DummyProvider', {}),
     'stripe': ('payments.stripe.StripeProviderV3', {
         'api_key': os.getenv('STRIPE_API_KEY'),
-        'endpoint_secret': os.getenv('STRIPE_ENDPOINT_SECRET', 'false').lower() == 'true',
+        'endpoint_secret': os.getenv('STRIPE_ENDPOINT_SECRET'),
         'secure_endpoint': not DEBUG,
         'use_token': True,
     }),
@@ -258,8 +259,8 @@ CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = "UTC"
 
 # Password Reset
-DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = os.getenv('PASSWORD_RESET_TOKEN_EXPIRY_TIME', default=24)
-DJANGO_REST_PASSWORDRESET_NO_INFORMATION_LEAKAGE = os.getenv('PASSWORD_RESET_NO_INFORMATION_LEAKAGE', default=False)
+DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = int(os.getenv('PASSWORD_RESET_TOKEN_EXPIRY_TIME', default=24))
+DJANGO_REST_PASSWORDRESET_NO_INFORMATION_LEAKAGE = os.getenv('PASSWORD_RESET_NO_INFORMATION_LEAKAGE', 'false').lower() == 'true'
 DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
     "CLASS": "django_rest_passwordreset.tokens.RandomStringTokenGenerator",
     "OPTIONS": {
@@ -280,4 +281,4 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'false').lower() == 'true'
 
 
 # Reservation Variables
-RESERVATION_CANCELLATION_INTERVAL = os.getenv('RESERVATION_CANCELLATION_INTERVAL', default=1800)
+RESERVATION_CANCELLATION_INTERVAL = int(os.getenv('RESERVATION_CANCELLATION_INTERVAL', default=1800))
