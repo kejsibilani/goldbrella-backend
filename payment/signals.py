@@ -1,17 +1,16 @@
-# from django.dispatch import receiver
-# from payments.signals import status_changed
-# from payments import PaymentStatus
-#
-# from booking.choices import BookingStatusChoices
-#
-# @receiver(status_changed)
-# def on_payment_status_changed(sender, instance, **kwargs):
-#     if instance.status == PaymentStatus.CONFIRMED:
-#         # mark booking confirmed
-#         booking = instance.booking
-#         booking.status = BookingStatusChoices.CONFIRMED.value
-#         booking.save()
-#
-#         # # create invoice if not existing
-#         # if not hasattr(booking, 'invoice'):
-#         #     generate_invoice(booking)
+from django.dispatch import receiver
+from payments import PaymentStatus
+from payments.signals import status_changed
+
+
+@receiver(status_changed)
+def on_payment_status_changed(instance, **kwargs):
+    invoice = instance.booking.invoice
+
+    if instance.status == PaymentStatus.CONFIRMED:
+        invoice.paid_amount = invoice.total_amount
+    elif instance.status == PaymentStatus.REFUNDED:
+        invoice.paid_amount = instance.captured_amount
+    else:
+        invoice.paid_amount = invoice.paid_amount
+    invoice.save()
