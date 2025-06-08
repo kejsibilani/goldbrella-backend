@@ -211,9 +211,9 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(seconds=int(os.getenv("ACCESS_TOKEN_LIFETIME", default=300))),  # Token expires in 5 minutes
     "REFRESH_TOKEN_LIFETIME": timedelta(seconds=int(os.getenv("REFRESH_TOKEN_LIFETIME", default=86400))), # Token expires in 1 day
+    "ROTATE_REFRESH_TOKENS": os.getenv('ROTATE_REFRESH_TOKENS', default='false').lower() == 'true',
     "TOKEN_OBTAIN_SERIALIZER": "account.serializers.token.TokenObtainSerializer",
     "BLACKLIST_AFTER_ROTATION": True,
-    "ROTATE_REFRESH_TOKENS": False,
 }
 
 
@@ -244,14 +244,14 @@ PAYMENT_VARIANTS = {
     'dummy': ('payments.dummy.DummyProvider', {}),
     'stripe': ('payments.stripe.StripeProviderV3', {
         'api_key': os.getenv('STRIPE_API_KEY'),
-        'endpoint_secret': os.getenv('STRIPE_ENDPOINT_SECRET', default=None),
+        'endpoint_secret': os.getenv('STRIPE_ENDPOINT_SECRET', 'false').lower() == 'true',
         'secure_endpoint': not DEBUG,
         'use_token': True,
     }),
 }
 
 # Django Celery Beat
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', default='redis://redis:6379/0')
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', default='redis://localhost:6379/0')
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ENABLE_UTC = True
@@ -267,6 +267,17 @@ DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
         "max_length": 64
     }
 }
+
+
+# Email Settings
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_PORT = os.getenv('EMAIL_PORT', default=587)
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX')
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'false').lower() == 'true'
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'false').lower() == 'true'
+
 
 # Reservation Variables
 RESERVATION_CANCELLATION_INTERVAL = os.getenv('RESERVATION_CANCELLATION_INTERVAL', default=1800)
