@@ -1,6 +1,7 @@
 from django.db.models import Q
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -13,7 +14,7 @@ from invoice.models import BookingInvoice
 from invoice.serializers import BookingInvoiceSerializer
 
 
-class BookingInvoiceViewSet(ReadOnlyModelViewSet):
+class BookingInvoiceViewSet(UpdateModelMixin, ReadOnlyModelViewSet):
     permission_classes = [DjangoModelPermissions]
     serializer_class = BookingInvoiceSerializer
     filterset_class = BookingInvoiceFilterSet
