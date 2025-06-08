@@ -55,7 +55,7 @@ def password_reset_token_created(instance, reset_password_token, **kwargs):
     }
 
     schedule_email(
-        expiration_time=getattr(settings, 'PASSWORD_RESET_TOKEN_EXPIRY_TIME'),
+        expiration_time=getattr(settings, 'DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME', 24),
         support_link=f"{instance.request._current_scheme_host}/support",
         password_link=context['reset_password_link'],
         template_name='reset_password',
