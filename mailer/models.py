@@ -14,6 +14,7 @@ class ScheduledEmail(models.Model):
 
     system_generated = models.BooleanField(default=True)
     timestamp = models.DateTimeField(default=timezone.now)
+    message = models.TextField(blank=True, null=True)
     status = models.CharField(
         default=ScheduledEmailStatusChoices.SCHEDULED.value,
         choices=ScheduledEmailStatusChoices.choices,

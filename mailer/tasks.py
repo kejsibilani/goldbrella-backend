@@ -40,12 +40,12 @@ def schedule_send_email(
     try:
         msg.send(fail_silently=False)
     except Exception:
-        ScheduledEmail.objects.filter(pk=email_instance.pk).update(
+        ScheduledEmail.objects.filter(pk=email_instance).update(
             status=ScheduledEmailStatusChoices.FAILED.value,
             message=traceback.format_exc(),
         )
     else:
-        ScheduledEmail.objects.filter(pk=email_instance.pk).update(
+        ScheduledEmail.objects.filter(pk=email_instance).update(
             status=ScheduledEmailStatusChoices.SENT.value,
             message='Mail sent successfully',
             timestamp=timezone.now()

@@ -37,6 +37,22 @@ class Mailer:
 
         if subject is None or content is None:
             raise ValueError('`subject` and `content` must be defined')
+
+        # clear previous attachments
+        self.clear_attachments()
+        # declare the function
+        _scheduled_email = partial(
+            self._scheduler,
+            recipient_list=self.receivers,
+            from_email=self.sender,
+            subject=subject,
+            content=content
+        )
+
+        # add attachments
+        for attachment in attachments or []:
+            self.add_attachment(attachment)
+
         # generate an instance
         instance = ScheduledEmail.objects.create(
             system_generated=system_mail,
@@ -45,23 +61,10 @@ class Mailer:
             subject=subject,
             content=content,
         )
-        # clear previous attachments
-        self.clear_attachments()
-        # declare the function
-        _scheduled_email = partial(
-            self._scheduler,
-            recipient_list=self.receivers,
-            email_instance=instance.pk,
-            from_email=self.sender,
-            subject=subject,
-            content=content
-        )
-
-        for attachment in attachments or []:
-            self.add_attachment(attachment)
-
+        # call the scheduler
         _scheduled_email(
-            attachments=self.attachments
+            attachments=self.attachments,
+            email_instance=instance.pk,
         )
 
     def add_attachment(self, file: File):
