@@ -7,6 +7,8 @@ from django_celery_beat.utils import make_aware
 from django_rest_passwordreset.signals import reset_password_token_created
 
 from account.models import User
+from mailer.scripts import schedule_email
+from mailer.system import system_info
 from shift.models import Shift
 
 
@@ -32,21 +34,32 @@ def create_shift_for_staff(instance, created, **kwargs):
 
 
 @receiver(reset_password_token_created)
-def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+def password_reset_token_created(instance, reset_password_token, **kwargs):
     """
     Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
-    :param sender: View Class that sent the signal
     :param instance: View Instance that sent the signal
     :param reset_password_token: Token Model Object
-    :param args:
-    :param kwargs:
-    :return:
+    :param kwargs: View Class Instance that sent the signal and other arguments
     """
 
     # send an e-mail to the user
     context = {
         'email': reset_password_token.user.email,
         'current_user': reset_password_token.user,
-        'reset_password_token': reset_password_token.key
+        'reset_password_token': reset_password_token.key,
+        'reset_password_link': f"{instance.request._current_scheme_host}"
+                               f"/auth/validate/?token="
+                               f"{reset_password_token.key}"
     }
+
+    schedule_email(
+        support_link=f"{instance.request._current_scheme_host}/support",
+        password_link=context['reset_password_link'],
+        template_name='reset_password',
+        user=context['current_user'],
+        to=[context['email']],
+        company=system_info,
+        system_mail=True
+    )
+    return
