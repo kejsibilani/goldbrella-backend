@@ -20,7 +20,7 @@ class Mailer:
         self.attachments = []
 
     def __call__(self, to: list, template_name: str, from_email: tuple = None, system_mail: bool = True, attachments: list = None, **context):
-        self.sender = from_email or settings.DEFAULT_FROM_EMAIL
+        self.sender = (from_email[0] if isinstance(from_email, (tuple, list)) else from_email) or settings.DEFAULT_FROM_EMAIL[0]
         self.receivers = to
 
         subject_path = self._base_subject_path / f'{template_name}.txt'
