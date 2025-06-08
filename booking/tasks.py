@@ -4,15 +4,15 @@ from booking.choices import BookingStatusChoices
 from booking.models import Booking
 
 
-@shared_task(bind=True)
-def cancel_partial_bookings(self, booking_id):
+@shared_task
+def cancel_partial_bookings(booking_id):
     """
     Runs ~30 minutes after reservation. If booking is still 'reserved',
     mark it 'cancelled'. Otherwise (already 'confirmed'), do nothing.
     """
 
     try:
-        booking = Booking.objects.select_for_update().get(pk=booking_id)
+        booking = Booking.objects.get(pk=booking_id)
     except Booking.DoesNotExist:
         # Booking was deleted or never existed; nothing to do.
         return
