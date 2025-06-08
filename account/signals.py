@@ -14,7 +14,7 @@ from shift.models import Shift
 
 @receiver(post_save, sender=User)
 def create_shift_for_staff(instance, created, **kwargs):
-    if created and (instance.has_role('supervisor') or instance.has_role('staff')):
+    if created and instance.is_staff:
         Shift.objects.get_or_create(
             user=instance,
             defaults={

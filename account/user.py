@@ -17,9 +17,5 @@ class AnonymousUser(PermissionMixin, BaseAnonymousUser):
     preferred_language = None
 
     @staticmethod
-    def has_role(role: str):
-        return False
-
-    @staticmethod
     def get_full_name():
         return ""

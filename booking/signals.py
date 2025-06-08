@@ -16,7 +16,7 @@ from invoice.models import BookingInvoice
 @receiver(pre_save, sender=Booking)
 def set_booking_initial_status(instance, **kwargs):
     if not instance.pk:
-        if instance.booked_by.has_role('guest'):
+        if instance.booked_by.is_guest:
             setattr(instance, "status", BookingStatusChoices.PARTIAL_RESERVED.value)
         else:
             setattr(instance, "status", BookingStatusChoices.RESERVED.value)

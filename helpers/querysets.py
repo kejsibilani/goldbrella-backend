@@ -44,17 +44,9 @@ def inventory_queryset(request):
 
 
 def user_queryset(request):
-    if request.user.has_role('admin'):
+    if request.user.is_superuser:
         return User.objects.all()
-    elif request.user.has_role('supervisor'):
-        return User.objects.filter(
-            Q(
-                role='guest',
-                pk=request.user.pk,
-                _connector=Q.OR
-            )
-        )
-    elif request.user.has_role('staff'):
+    elif request.user.is_staff:
         return User.objects.filter(
             Q(
                 role='guest',
@@ -82,13 +74,9 @@ def self_user_queryset(request):
 
 
 def booking_queryset(request):
-    if request.user.has_role('admin'):
+    if request.user.is_superuser:
         return Booking.objects.all()
-    elif request.user.has_role('supervisor'):
-        return Booking.objects.filter(
-            Q(booked_by=request.user.pk, user=request.user.pk, _connector=Q.OR)
-        )
-    elif request.user.has_role('staff'):
+    elif request.user.is_staff:
         return Booking.objects.filter(
             Q(booked_by=request.user.pk, user=request.user.pk, _connector=Q.OR)
         )

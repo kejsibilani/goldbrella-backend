@@ -27,7 +27,7 @@ def update_booking_status(instance, **kwargs):
     elif instance.payment_status == PaymentStatusChoices.PARTIAL_PAID.value:
         setattr(instance.booking, 'status', BookingStatusChoices.RESERVED.value)
     else:
-        if instance.booking.booked_by.has_role('guest'):
+        if instance.booking.booked_by.is_guest:
             setattr(instance.booking, "status", BookingStatusChoices.PARTIAL_RESERVED.value)
         else:
             setattr(instance.booking, "status", BookingStatusChoices.RESERVED.value)

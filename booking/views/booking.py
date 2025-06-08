@@ -39,13 +39,9 @@ class BookingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         request_user = self.request.user
 
-        if request_user.has_role('admin'):
+        if request_user.is_superuser:
             return Booking.objects.all()
-        elif request_user.has_role('supervisor'):
-            return Booking.objects.filter(
-                Q(booked_by=request_user, user=request_user, _connector=Q.OR)
-            )
-        elif request_user.has_role('staff'):
+        elif request_user.is_staff:
             return Booking.objects.filter(
                 Q(booked_by=request_user, user=request_user, _connector=Q.OR)
             )

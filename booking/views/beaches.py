@@ -17,7 +17,7 @@ class BookingBeachViewSet(ListModelMixin, GenericViewSet):
     def get_queryset(self):
         request_user = self.request.user
 
-        if request_user.has_role('admin') or request_user.has_role('supervisor') or request_user.has_role('staff'):
+        if request_user.is_superuser or request_user.is_staff:
             return Beach.objects.filter(
                 Q(
                     Q(bookings__booking_date__lt=localdate()),

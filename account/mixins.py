@@ -1,4 +1,7 @@
 class PermissionMixin:
+    def has_role(self, role):
+        return self.role == role
+
     @property
     def full_name(self):
         return self.get_full_name()

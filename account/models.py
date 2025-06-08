@@ -40,8 +40,5 @@ class User(PermissionMixin, AbstractUser):
         verbose_name_plural = 'Users'
         verbose_name = 'User'
 
-    def has_role(self, role):
-        return self.role == role
-
     def __str__(self):
         return self.email

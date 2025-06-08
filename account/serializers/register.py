@@ -34,12 +34,15 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         # check request user is superuser
         context_user = getattr(self.context.get('request'), 'user', None)
-        is_superuser = context_user.has_role('admin') if context_user else False
+        is_superuser = context_user.is_superuser if context_user else False
         # fetch role from attrs
         role = attrs.get('role', 'guest')
         # add condition for adding role
         if not is_superuser and not (role == 'guest'):
             raise serializers.ValidationError({'detail': 'Only guest users can register themselves.'})
+        # adjust booleans
+        if role in ['staff', 'supervisor']: attrs['is_staff'] = True
+        elif role == 'admin': attrs['is_superuser'] = True
         # add user group
         groups = Group.objects.filter(name__iexact=role)
         attrs['groups'] = groups

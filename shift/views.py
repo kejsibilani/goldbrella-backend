@@ -21,11 +21,9 @@ class ShiftViewSet(UpdateModelMixin, viewsets.ReadOnlyModelViewSet):
     filterset_class = ShiftFilterSet
 
     def get_queryset(self):
-        if self.request.user.has_role('admin'):
+        if self.request.user.is_superuser:
             return Shift.objects.all()
-        elif self.request.user.has_role('supervisor'):
-            return Shift.objects.filter(user=self.request.user)
-        elif self.request.user.has_role('staff'):
+        elif self.request.user.is_staff:
             return Shift.objects.filter(user=self.request.user)
         return Shift.objects.none()
 
