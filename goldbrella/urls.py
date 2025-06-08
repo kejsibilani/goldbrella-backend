@@ -45,6 +45,9 @@ urlpatterns = [
 
     # Swagger Documentation
     path('api/docs', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-ui'),
+
+    # Test Endpoints
+    path('test/', include(('mailer.urls', 'mailer'), namespace='v1')),
 ]
 
 urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
