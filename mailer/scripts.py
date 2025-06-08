@@ -1,3 +1,4 @@
+import json
 import os
 from functools import partial
 
@@ -6,6 +7,7 @@ from django.core.files import File
 from django.template.loader import render_to_string
 
 from helpers.short_func import get_file_type_by_extension
+from mailer.models import ScheduledEmail
 from mailer.tasks import schedule_send_email
 
 
@@ -17,38 +19,50 @@ class Mailer:
     def __init__(self):
         self.attachments = []
 
-    def __call__(self, to: list, template_name: str, from_email: tuple = None, **context):
+    def __call__(self, to: list, template_name: str, from_email: tuple = None, system_mail: bool = True, attachments: list = None, **context):
         self.sender = from_email or settings.DEFAULT_FROM_EMAIL
         self.receivers = to
 
         subject_path = self._base_subject_path / f'{template_name}.txt'
-        print('Subject Path:', subject_path)
         if os.path.isfile(subject_path):
             subject = render_to_string(subject_path, context=context)
         else:
             subject = context.get('subject', None)
 
         content_path = self._base_content_path / f'{template_name}.html'
-        print('Content Path:', content_path)
         if os.path.isfile(content_path):
             content = render_to_string(content_path, context=context)
         else:
             content = context.get('content', None)
 
-        print('Subject:', subject)
-        print('Content:', content)
         if subject is None or content is None:
             raise ValueError('`subject` and `content` must be defined')
-
-        self.clear_attachments()
-        self.__scheduled_email = partial(
-            self._scheduler,
+        # generate an instance
+        instance = ScheduledEmail.objects.create(
+            system_generated=system_mail,
+            receivers=json.dumps(self.receivers),
+            sender=json.dumps(self.sender),
             subject=subject,
             content=content,
-            from_email=self.sender,
-            recipient_list=self.receivers,
         )
-        return self
+        # clear previous attachments
+        self.clear_attachments()
+        # declare the function
+        _scheduled_email = partial(
+            self._scheduler,
+            recipient_list=self.receivers,
+            email_instance=instance.pk,
+            from_email=self.sender,
+            subject=subject,
+            content=content
+        )
+
+        for attachment in attachments or []:
+            self.add_attachment(attachment)
+
+        _scheduled_email(
+            attachments=self.attachments
+        )
 
     def add_attachment(self, file: File):
         filename = file.name
@@ -65,10 +79,5 @@ class Mailer:
     def clear_attachments(self):
         self.attachments = []
 
-    def schedule(self):
-        self.__scheduled_email(
-            attachments=self.attachments
-        )
 
-
-mailer = Mailer()
+schedule_email = Mailer()

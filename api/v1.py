@@ -17,4 +17,7 @@ urlpatterns = [
     path('', include(('shift.urls', 'shift'), namespace='shift')),
     path('', include(('sunbed.urls', 'sunbed'), namespace='sunbed')),
     path('', include(('zone.urls', 'zone'), namespace='zone')),
+
+    # Test Endpoints
+    path('', include(('mailer.urls', 'mailer'), namespace='mailer')),
 ]
