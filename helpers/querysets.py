@@ -86,13 +86,13 @@ def booking_queryset(request):
         return Booking.objects.all()
     elif request.user.has_role('supervisor'):
         return Booking.objects.filter(
-            Q(booked_by=request.user, user=request.user, _connector=Q.OR)
+            Q(booked_by=request.user.pk, user=request.user.pk, _connector=Q.OR)
         )
     elif request.user.has_role('staff'):
         return Booking.objects.filter(
-            Q(booked_by=request.user, user=request.user, _connector=Q.OR)
+            Q(booked_by=request.user.pk, user=request.user.pk, _connector=Q.OR)
         )
-    return Booking.objects.filter(user=request.user)
+    return Booking.objects.filter(user=request.user.pk)
 
 
 def complaint_related_queryset(request):
