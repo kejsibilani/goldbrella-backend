@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.timezone import localtime
@@ -54,6 +55,7 @@ def password_reset_token_created(instance, reset_password_token, **kwargs):
     }
 
     schedule_email(
+        expiration_time=getattr(settings, 'PASSWORD_RESET_TOKEN_EXPIRY_TIME'),
         support_link=f"{instance.request._current_scheme_host}/support",
         password_link=context['reset_password_link'],
         template_name='reset_password',
