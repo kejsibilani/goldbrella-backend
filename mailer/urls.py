@@ -1,8 +1,11 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
 
-from mailer.views import IndexView
+from mailer.views import ScheduledEmailViewSet
 
 app_name = 'mailer'
-urlpatterns = [
-    path('send-test-mail', IndexView.as_view(), name='send-mail'),
-]
+
+router = DefaultRouter(trailing_slash=False)
+router.register('scheduled-emails', ScheduledEmailViewSet, basename='scheduled-email')
+
+
+urlpatterns = router.urls

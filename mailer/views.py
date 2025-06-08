@@ -1,27 +1,23 @@
-from django.conf import settings
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
+from rest_framework import viewsets
 
-from mailer.scripts import schedule_email
-from mailer.system import system_info
+from helpers.pagination import GenericPagination
+from helpers.permissions import CustomDjangoModelPermissions
+from mailer.filters import ScheduledEmailFilterSet
+from mailer.models import ScheduledEmail
+from mailer.serializers import ScheduledEmailSerializer
 
 
 # Create your views here.
-class IndexView(GenericAPIView):
-    authentication_classes = ()
-    permission_classes = ()
+class ScheduledEmailViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [CustomDjangoModelPermissions]
+    serializer_class = ScheduledEmailSerializer
+    filterset_class = ScheduledEmailFilterSet
+    pagination_class = GenericPagination
 
-    def get(self, request, *args, **kwargs):
-        schedule_email(
-            to=['random9603@punkproof.com'],
-            template_name='reset_password',
-            company=system_info,
-            **{
-                'logo_link': 'https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg?semt=ais_hybrid',
-                'password_link': 'http://xyz.com?token123',
-                'support_link': 'http://xyz.com/support',
-                'expiration_time': getattr(settings, 'DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME'),
-                'user': request.user,
-            }
-        )
-        return Response({})
+    def get_queryset(self):
+        request_user = self.request.user
+        if request_user.is_superuser:
+            return ScheduledEmail.objects.all()
+        elif request_user.is_staff:
+            return ScheduledEmail.objects.filter(system_generated=False)
+        return ScheduledEmail.objects.none()
