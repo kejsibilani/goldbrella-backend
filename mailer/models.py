@@ -24,3 +24,6 @@ class ScheduledEmail(models.Model):
     class Meta:
         verbose_name_plural = "Scheduled Emails"
         verbose_name = "Scheduled Email"
+
+    def __str__(self):
+        return f"Scheduled Email #{self.id} {self.status} on {self.timestamp}"
