@@ -11,6 +11,7 @@ from booking.models import Booking
 from booking.models import SunbedBooking
 from inventory.models import InventoryItem
 from location.models import Location
+from mailer.models import ScheduledEmail
 from services.models import Facility
 from services.models import Rule
 from shift.models import Shift
@@ -53,3 +54,5 @@ admin.site.register(Booking)
 admin.site.register(BookedInventory)
 admin.site.register(Facility)
 admin.site.register(Rule)
+
+admin.site.register(ScheduledEmail)
