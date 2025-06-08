@@ -243,7 +243,7 @@ CORS_ALLOW_HEADERS = ["*"]
 PAYMENT_HOST = os.getenv('PAYMENT_HOST', default='localhost:8000')
 PAYMENT_MODEL = 'payment.BookingPayment'
 PAYMENT_VARIANTS = {
-    'dummy': ('payments.dummy.DummyProvider', {}),
+    'cash': ('payments.dummy.DummyProvider', {}),
     'stripe': ('payments.stripe.StripeProviderV3', {
         'api_key': os.getenv('STRIPE_API_KEY'),
         'endpoint_secret': os.getenv('STRIPE_ENDPOINT_SECRET'),
