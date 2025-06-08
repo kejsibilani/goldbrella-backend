@@ -11,7 +11,7 @@ from payment.serializers import BookingPaymentSerializer
 
 
 # Create your views here.
-class BookingPaymentViewSet(viewsets.ModelViewSet):
+class BookingPaymentReadViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [CustomDjangoModelPermissions]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     serializer_class = BookingPaymentSerializer
@@ -21,13 +21,9 @@ class BookingPaymentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         request_user = self.request.user
-        if request_user.has_role('admin'):
+        if request_user.is_superuser:
             return BookingPayment.objects.all()
-        elif request_user.has_role('supervisor'):
-            return BookingPayment.objects.filter(
-                Q(booking__user=request_user, booking__booked_by=request_user, _connector=Q.OR)
-            )
-        elif request_user.has_role('staff'):
+        elif request_user.is_staff:
             return BookingPayment.objects.filter(
                 Q(booking__user=request_user, booking__booked_by=request_user, _connector=Q.OR)
             )
