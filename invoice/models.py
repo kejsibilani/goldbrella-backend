@@ -59,7 +59,6 @@ class BookingInvoice(models.Model):
             sunbeds_tax = 0.0
         return sunbeds_tax + inventory_tax
 
-    is_refunded = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
