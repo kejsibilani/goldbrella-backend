@@ -6,6 +6,7 @@ from invoice.models import BookingInvoice
 
 
 class BookingInvoiceSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField(read_only=True)
     invoice_items = serializers.SerializerMethodField(read_only=True)
     payment_method = serializers.SerializerMethodField(read_only=True)
     total_amount = serializers.SerializerMethodField(read_only=True)
@@ -34,3 +35,7 @@ class BookingInvoiceSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_payment_method(instance):
         return instance.payment_method
+
+    @staticmethod
+    def get_id(instance):
+        return instance.id
