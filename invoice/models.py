@@ -48,7 +48,7 @@ class BookingInvoice(models.Model):
                 'inventory_item__price', 'quantity'
             )
         ])
-        return sunbeds_price + inventory_price
+        return Decimal(sunbeds_price + inventory_price)
 
     @property
     def tax_amount(self):
@@ -61,9 +61,9 @@ class BookingInvoice(models.Model):
                 )
             ])
         except Exception:
-            inventory_tax = 0.0
-            sunbeds_tax = 0.0
-        return sunbeds_tax + inventory_tax
+            inventory_tax = Decimal(0)
+            sunbeds_tax = Decimal(0)
+        return Decimal(sunbeds_tax + inventory_tax)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
