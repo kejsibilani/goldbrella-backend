@@ -23,5 +23,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/runner "${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }}" << 'EOF'
             cd "${{ secrets.GCP_DEPLOY_PATH }}"
-            sh deployer.sh
+            git -C "${{ secrets.GCP_DEPLOY_PATH }}" pull
+            sh deploy.sh
           EOF
