@@ -21,7 +21,7 @@ jobs:
 
       - name: Deploy to GCE via SSH
         run: |
-          ssh - i ~/.ssh/runner "${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }}" << 'EOF'
+          ssh - i ~/.ssh/runner "${{ secrets.GCP_VM_USER }}"@"${{ secrets.GCP_VM_HOST }}" << 'EOF'
             cd "${{ secrets.GCP_DEPLOY_PATH }}"
             sh deployer.sh
           EOF
