@@ -61,7 +61,7 @@ def update_invoice_status_on_payment(instance, **kwargs):
 
 @receiver(pre_save, sender=BookingPayment)
 def create_stripe_payment_intent(instance, **kwargs):
-    if not instance.pk:
+    if not instance.external_intent:
         intent = handler.payment_intent(instance)
         setattr(instance, 'client_secret', intent.client_secret)
         setattr(instance, 'external_intent', intent.id)
