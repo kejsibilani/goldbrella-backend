@@ -23,6 +23,7 @@ class BookingBeachReadSerializer(serializers.ModelSerializer):
 
 
 class BookingReadSerializer(serializers.ModelSerializer):
+    invoice_number = serializers.SerializerMethodField()
     beach = BookingBeachReadSerializer(read_only=True)
     sunbeds = SunbedSerializer(read_only=True, many=True)
     inventory = BookedInventorySerializer(read_only=True, many=True)
@@ -31,3 +32,7 @@ class BookingReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = "__all__"
+
+    @staticmethod
+    def get_invoice_number(obj):
+        return obj.invoice.invoice_number
