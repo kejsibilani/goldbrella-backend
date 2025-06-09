@@ -25,7 +25,8 @@ class BookingInvoice(models.Model):
     )
     tax_amount = models.DecimalField(
         max_digits=10, decimal_places=2,
-        validators=[MinValueValidator(0.0)]
+        validators=[MinValueValidator(0.0)],
+        default=0.0
     )
     payment_method = models.CharField(
         choices=PaymentMethodChoices.choices,
