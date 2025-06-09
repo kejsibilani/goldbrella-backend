@@ -5,7 +5,7 @@ from payment.views import BookingPaymentViewSet
 app_name = 'payment'
 
 router = DefaultRouter(trailing_slash=False)
-router.register(r'bookings/payments', BookingPaymentViewSet, basename='booking-payment')
+router.register(r'payments', BookingPaymentViewSet, basename='booking-payment')
 
 
 urlpatterns = router.urls
