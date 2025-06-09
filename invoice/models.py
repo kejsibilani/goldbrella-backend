@@ -1,3 +1,4 @@
+from decimal import Decimal
 from uuid import uuid4
 
 from django.core.validators import MinValueValidator
@@ -10,7 +11,11 @@ from invoice.choices import InvoiceStatusChoices
 class BookingInvoice(models.Model):
     _history = HistoricalRecords(related_name="history")
 
-    invoice_number = models.CharField(max_length=50, unique=True, editable=False, default=uuid4)
+    @property
+    def id(self):
+        return self.booking.pk
+
+    invoice_number = models.CharField(max_length=50, primary_key=True, editable=False, default=uuid4)
     booking = models.OneToOneField(
         to='booking.Booking',
         on_delete=models.CASCADE,
@@ -20,7 +25,8 @@ class BookingInvoice(models.Model):
     currency = models.CharField(max_length=3, default='EUR')
     paid_amount = models.DecimalField(
         max_digits=10, decimal_places=2,
-        validators=[MinValueValidator(0.0)]
+        validators=[MinValueValidator(0.0)],
+        default=Decimal(0),
     )
     status = models.CharField(
         default=InvoiceStatusChoices.UNPAID.value,

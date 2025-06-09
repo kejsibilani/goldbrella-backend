@@ -43,7 +43,6 @@ def create_invoice_for_booking(instance, created, **kwargs):
     if created: BookingInvoice.objects.get_or_create(
         booking=instance,
         defaults={
-            'payment_method': PaymentMethodChoices.STRIPE.value,
             'paid_amount': Decimal(0),
         }
     )

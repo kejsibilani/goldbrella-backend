@@ -1,11 +1,10 @@
 from django.db.models import Q
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from booking.models import Booking
 from helpers.pagination import GenericPagination
@@ -14,11 +13,12 @@ from invoice.models import BookingInvoice
 from invoice.serializers import BookingInvoiceSerializer
 
 
-class BookingInvoiceViewSet(UpdateModelMixin, ReadOnlyModelViewSet):
+class BookingInvoiceViewSet(UpdateModelMixin, viewsets.ReadOnlyModelViewSet):
     permission_classes = [DjangoModelPermissions]
     serializer_class = BookingInvoiceSerializer
     filterset_class = BookingInvoiceFilterSet
     pagination_class = GenericPagination
+    lookup_field = 'booking__pk'
 
     def get_queryset(self):
         request_user = self.request.user
@@ -32,7 +32,7 @@ class BookingInvoiceViewSet(UpdateModelMixin, ReadOnlyModelViewSet):
         return BookingInvoice.objects.filter(booking__user=request_user)
 
 
-class BookingInvoiceReadViewSet(GenericViewSet):
+class BookingInvoiceReadViewSet(viewsets.GenericViewSet):
     permission_classes = [DjangoModelPermissions]
     serializer_class = BookingInvoiceSerializer
 
