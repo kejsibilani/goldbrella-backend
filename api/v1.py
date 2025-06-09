@@ -10,6 +10,7 @@ urlpatterns = [
     path('', include(('inventory.urls', 'inventory'), namespace='inventory')),
     path('', include(('invoice.urls', 'invoice'), namespace='invoice')),
     path('', include(('location.urls', 'location'), namespace='location')),
+    path('', include(('mailer.urls', 'mailer'), namespace='mailer')),
     path('', include(('notification.urls', 'notification'), namespace='notification')),
     path('', include(('payment.urls', 'payment'), namespace='payment')),
     path('', include(('review.urls', 'review'), namespace='review')),
@@ -17,7 +18,4 @@ urlpatterns = [
     path('', include(('shift.urls', 'shift'), namespace='shift')),
     path('', include(('sunbed.urls', 'sunbed'), namespace='sunbed')),
     path('', include(('zone.urls', 'zone'), namespace='zone')),
-
-    # Test Endpoints
-    path('', include(('mailer.urls', 'mailer'), namespace='mailer')),
 ]
