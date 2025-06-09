@@ -14,8 +14,8 @@ class BookingInvoiceSerializer(serializers.ModelSerializer):
         model = BookingInvoice
         fields = '__all__'
         read_only_fields = (
-            'invoice_number', 'booking', 'status',
-            'paid_amount', 'payment_method'
+            'invoice_number', 'booking',
+            'status', 'paid_amount'
         )
 
     @staticmethod

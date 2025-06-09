@@ -12,7 +12,6 @@ class BookingInvoiceFilterSet(FilterSet):
     booking = filters.ModelMultipleChoiceFilter(queryset=booking_queryset)
     paid_amount = filters.NumericRangeFilter()
     status = filters.MultipleChoiceFilter(choices=InvoiceStatusChoices.choices)
-    is_refunded = filters.BooleanFilter()
     created = filters.DateTimeFromToRangeFilter()
     updated = filters.DateTimeFromToRangeFilter()
     # payment based filter
