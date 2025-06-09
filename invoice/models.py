@@ -49,6 +49,21 @@ class BookingInvoice(models.Model):
         ])
         return sunbeds_price + inventory_price
 
+    @property
+    def total_tax_amount(self):
+        try:
+            sunbeds_tax = sum(self.booking.sunbeds.values_list('tax_amount', flat=True))
+            inventory_tax = sum([
+                tax_amount * quantity
+                for tax_amount, quantity in self.booking.inventory.values_list(
+                    'inventory_item__tax_amount', 'quantity'
+                )
+            ])
+        except Exception:
+            inventory_tax = 0.0
+            sunbeds_tax = 0.0
+        return sunbeds_tax + inventory_tax
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
