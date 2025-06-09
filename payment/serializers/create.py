@@ -5,7 +5,7 @@ from payment.models import BookingPayment
 
 
 class BookingPaymentCreateSerializer(serializers.ModelSerializer):
-    payment_method = serializers.ChoiceField(choices=PaymentMethodChoices.choices, source='variant')
+    variant = serializers.ChoiceField(choices=PaymentMethodChoices.choices)
 
     class Meta:
         model = BookingPayment
@@ -20,7 +20,7 @@ class BookingPaymentCreateSerializer(serializers.ModelSerializer):
 
 
 class PaymentValidationSerializer(serializers.Serializer):
-    payment_method = serializers.ChoiceField(choices=PaymentMethodChoices.choices)
+    payment_method = serializers.ChoiceField(choices=PaymentMethodChoices.choices, source='variant')
 
     billing_first_name = serializers.CharField(required=False)
     billing_last_name = serializers.CharField(required=False)
