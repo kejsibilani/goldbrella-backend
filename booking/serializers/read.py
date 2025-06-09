@@ -3,6 +3,7 @@ from rest_framework import serializers
 from beach.models import Beach
 from booking.models import Booking
 from booking.serializers.inventory import BookedInventorySerializer
+from booking.serializers.invoice import BookingInvoiceSerializer
 from helpers.fkeys.user import UserPrimaryKeyRelatedField
 from location.models import Location
 from sunbed.serializers import SunbedSerializer
@@ -23,7 +24,7 @@ class BookingBeachReadSerializer(serializers.ModelSerializer):
 
 
 class BookingReadSerializer(serializers.ModelSerializer):
-    invoice_number = serializers.SerializerMethodField()
+    invoice = BookingInvoiceSerializer(read_only=True)
     beach = BookingBeachReadSerializer(read_only=True)
     sunbeds = SunbedSerializer(read_only=True, many=True)
     inventory = BookedInventorySerializer(read_only=True, many=True)
@@ -32,7 +33,3 @@ class BookingReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = "__all__"
-
-    @staticmethod
-    def get_invoice_number(obj):
-        return obj.invoice.invoice_number
