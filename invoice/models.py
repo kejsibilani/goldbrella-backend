@@ -4,8 +4,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from simple_history.models import HistoricalRecords
 
-from invoice.choices import PaymentMethodChoices
-from invoice.choices import PaymentStatusChoices
+from invoice.choices import InvoiceStatusChoices
 
 
 class BookingInvoice(models.Model):
@@ -23,15 +22,16 @@ class BookingInvoice(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.0)]
     )
-    payment_method = models.CharField(
-        choices=PaymentMethodChoices.choices,
+    status = models.CharField(
+        default=InvoiceStatusChoices.UNPAID.value,
+        choices=InvoiceStatusChoices.choices,
         max_length=20
     )
-    payment_status = models.CharField(
-        default=PaymentStatusChoices.UNPAID.value,
-        choices=PaymentStatusChoices.choices,
-        max_length=20
-    )
+
+    @property
+    def payment_method(self):
+        last_payment = self.payments.last()
+        return getattr(last_payment, 'payment_method', None)
 
     @property
     def total_amount(self):
@@ -59,6 +59,7 @@ class BookingInvoice(models.Model):
             sunbeds_tax = 0.0
         return sunbeds_tax + inventory_tax
 
+    is_refunded = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
