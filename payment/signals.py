@@ -27,7 +27,7 @@ def calculate_total_amount(invoice, status):
 
 
 @receiver(post_save, sender=BookingPayment)
-def update_invoice_amount_on_payment(instance, created, **kwargs):
+def update_invoice_amount_on_payment(instance, **kwargs):
     if instance.status in PAYMENT_CHANGE_STATUSES:
         # calculate total paid amount
         paid_amount = calculate_total_amount(instance.invoice, PaymentStatusChoices.SUCCEEDED.value)
