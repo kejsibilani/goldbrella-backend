@@ -1,43 +1,41 @@
-from decimal import Decimal
-
 import factory
+from factory import fuzzy
 
-from booking.factories import BookingFactory
+from payment.choices import PaymentMethodChoices
+from payment.choices import PaymentStatusChoices
 from payment.models import BookingPayment
 
 
 class BookingPaymentFactory(factory.django.DjangoModelFactory):
     """
-    Factory for BookingPayment (subclass of BasePayment).
-    Provides reasonable defaults for BasePayment fields:
-      - variant (a key in PAYMENT_VARIANTS)
-      - description, total, tax, currency, delivery
-      - billing_* fields, customer_ip_address.
+    Factory for BookingPayment
     """
     class Meta:
         model = BookingPayment
 
-    # Associate with a booking via a subfactory (you must have a BookingFactory)
-    booking = factory.SubFactory(BookingFactory)
+    # Link to an invoice — assumes you have invoice/factories.py with BookingInvoiceFactory
+    invoice = factory.SubFactory('invoice.factories.BookingInvoiceFactory')
 
-    # Required fields inherited from BasePayment (per django-payments usage):
-    variant = factory.LazyAttribute(lambda _: 'dummy')
-    description = factory.Faker('sentence', nb_words=6)
-    total = Decimal('100.00')
-    tax = Decimal('10.00')
-    currency = 'USD'
-    delivery = Decimal('5.00')
+    # Core payment fields
+    note = factory.Faker('sentence', nb_words=8)
+    amount = factory.LazyAttribute(lambda o: o.invoice.total_amount)
+    payment_method = fuzzy.FuzzyChoice(PaymentMethodChoices.values)
+    status = PaymentStatusChoices.INITIATED.value
 
+    # Billing details
     billing_first_name = factory.Faker('first_name')
     billing_last_name = factory.Faker('last_name')
+    billing_email = factory.Faker('email')
+    billing_phone_number = factory.Faker('phone_number')
+
     billing_address_1 = factory.Faker('street_address')
-    billing_address_2 = ''
+    billing_address_2 = factory.Faker('secondary_address')
     billing_city = factory.Faker('city')
     billing_postcode = factory.Faker('postcode')
     billing_country_code = factory.LazyAttribute(lambda _: 'US')
-    billing_country_area = factory.LazyAttribute(lambda _: 'NY')
-    customer_ip_address = factory.LazyAttribute(lambda _: '127.0.0.1')
 
-    # If BasePayment has any additional non-nullable fields (e.g. `status`, etc.),
-    # you can override them here. By default, BasePayment auto-assigns status='waiting'
-    # and sets created/modified timestamps automatically.
+    # Stripe / external fields
+    external_intent = factory.Sequence(lambda n: f"pi_{n:08d}")
+    client_secret = factory.LazyAttribute(lambda o: f"{o.external_intent}_secret")
+
+    # Timestamps will be auto‐set by Django
