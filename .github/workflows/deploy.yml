@@ -26,11 +26,18 @@ jobs:
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+    # 3.5) Debug the gcloud
+    - name: Debug gcloud & OS Login
+      run: |
+        echo "Active account: $(gcloud auth list --filter=status:ACTIVE --format='value(account)')"
+        gcloud compute os-login describe-profile \
+          --account=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
+
     # 4) Now you have an “active” account—SSH will work
     - name: Deploy to GCE via SSH
       run: |
         gcloud compute ssh \
           --project ${{ secrets.GCP_PROJECT_ID }} \
-          --zone    ${{ secrets.GCP_ZONE }} \
+          --zone ${{ secrets.GCP_ZONE }} \
           ${{ secrets.GCE_USER }}@${{ secrets.GCE_INSTANCE }} \
           --command="cd ~/goldbrella-backend && sh deployer.sh"
