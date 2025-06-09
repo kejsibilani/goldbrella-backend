@@ -19,7 +19,7 @@ class BookingPayment(models.Model):
     status = models.CharField(
         default=PaymentStatusChoices.INITIATED.value,
         choices=PaymentStatusChoices.choices,
-        max_length=10
+        max_length=20
     )
 
     invoice = models.ForeignKey(
@@ -36,10 +36,12 @@ class BookingPayment(models.Model):
     # billing address
     billing_address_1 = models.CharField(blank=True, null=True, max_length=250)
     billing_address_2 = models.CharField(blank=True, null=True, max_length=250)
-    billing_city = models.CharField(blank=True, null=True, max_length=20)
-    billing_country = models.CharField(choices=country_names.items(), blank=True, null=True, max_length=5)
+    billing_city = models.CharField(blank=True, null=True, max_length=100)
+    billing_postcode = models.CharField(blank=True, null=True, max_length=20)
+    billing_country_code = models.CharField(choices=country_names.items(), blank=True, null=True, max_length=5)
 
-    payment_external_source = models.CharField(max_length=128, blank=True, null=True)
+    external_intent = models.CharField(max_length=128, blank=True, null=True)
+    client_secret = models.CharField(max_length=256, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -48,4 +50,4 @@ class BookingPayment(models.Model):
         verbose_name = 'Booking Payment'
 
     def __str__(self):
-        return f'Payment for booking {self.booking.pk}'
+        return f'Payment for booking {self.invoice.booking.pk}'

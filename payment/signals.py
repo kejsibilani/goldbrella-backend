@@ -1,10 +1,12 @@
 from django.db.models.aggregates import Sum
 from django.db.models.signals import post_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 from invoice.choices import InvoiceStatusChoices
 from payment.choices import PaymentStatusChoices
 from payment.models import BookingPayment
+from payment.scripts import handler
 
 
 PAYMENT_CHANGE_STATUSES = [
@@ -38,7 +40,7 @@ def update_invoice_amount_on_payment(instance, created, **kwargs):
 
 
 @receiver(post_save, sender=BookingPayment)
-def update_invoice_status_on_payment(instance, created, **kwargs):
+def update_invoice_status_on_payment(instance, **kwargs):
     if instance.status in PAYMENT_CHANGE_STATUSES:
         # calculate total paid amount
         paid_amount = calculate_total_amount(instance.invoice, PaymentStatusChoices.SUCCEEDED.value)
@@ -54,4 +56,13 @@ def update_invoice_status_on_payment(instance, created, **kwargs):
         else:
             instance.invoice.status = InvoiceStatusChoices.UNPAID.value
         instance.invoice.save()
+    return
+
+
+@receiver(pre_save, sender=BookingPayment)
+def create_stripe_payment_intent(instance, **kwargs):
+    if not instance.pk:
+        intent = handler.payment_intent(instance)
+        setattr(instance, 'client_secret', intent.client_secret)
+        setattr(instance, 'external_intent', intent.id)
     return
