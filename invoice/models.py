@@ -23,11 +23,6 @@ class BookingInvoice(models.Model):
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(0.0)]
     )
-    tax_amount = models.DecimalField(
-        max_digits=10, decimal_places=2,
-        validators=[MinValueValidator(0.0)],
-        default=0.0
-    )
     payment_method = models.CharField(
         choices=PaymentMethodChoices.choices,
         max_length=20
@@ -50,7 +45,7 @@ class BookingInvoice(models.Model):
         return sunbeds_price + inventory_price
 
     @property
-    def total_tax_amount(self):
+    def tax_amount(self):
         try:
             sunbeds_tax = sum(self.booking.sunbeds.values_list('tax_amount', flat=True))
             inventory_tax = sum([
