@@ -14,18 +14,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2) Install & authenticate gcloud
-    - name: Set up GCP SDK
-      uses: google-github-actions/setup-gcloud@v1
+    # 2) Authenticate to GCP
+    - id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    # 3) Install & configure gcloud
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        export_default_credentials: true
 
-    # 3) Deploy code using gcloud
+    # 4) Now you have an “active” account—SSH will work
     - name: Deploy to GCE via SSH
       run: |
-        gcloud compute ssh --zone ${{ secrets.GCP_ZONE }} \
-          ${{ secrets.GCE_USER }}@${{ secrets.GCE_INSTANCE }} \
+        gcloud compute ssh \
           --project ${{ secrets.GCP_PROJECT_ID }} \
+          --zone    ${{ secrets.GCP_ZONE }} \
+          ${{ secrets.GCE_USER }}@${{ secrets.GCE_INSTANCE }} \
           --command="cd ~/goldbrella-backend && sh deployer.sh"
