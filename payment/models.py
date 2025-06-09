@@ -1,41 +1,47 @@
-from decimal import Decimal
-from typing import Iterable
+from uuid import uuid4
 
 from django.db import models
-from django.urls import reverse
-from payments import PurchasedItem
-from payments.models import BasePayment
+from pytz import country_names
+
+from payment.choices import PaymentMethodChoices
+from payment.choices import PaymentStatusChoices
 
 
-class BookingPayment(BasePayment):
-    booking = models.ForeignKey(
-        to='booking.Booking',
-        on_delete=models.CASCADE,
-        related_name='payments',
+class BookingPayment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+
+    note = models.TextField(blank=True, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(
+        choices=PaymentMethodChoices.choices,
+        max_length=20
+    )
+    status = models.CharField(
+        default=PaymentStatusChoices.INITIATED.value,
+        choices=PaymentStatusChoices.choices,
+        max_length=10
     )
 
-    def get_failure_url(self) -> str:
-        # Return a URL where users are redirected after
-        # they fail to complete a payment:
-        return reverse('payment:payment-failure', args=[self.booking.pk])
+    invoice = models.ForeignKey(
+        to='invoice.BookingInvoice',
+        on_delete=models.CASCADE,
+        related_name='payments'
+    )
 
-    def get_success_url(self) -> str:
-        # Return a URL where users are redirected after
-        # they successfully complete a payment:
-        return reverse('payment:payment-success', args=[self.booking.pk])
+    # billing detail
+    billing_first_name = models.CharField(blank=True, null=True, max_length=200)
+    billing_last_name = models.CharField(blank=True, null=True, max_length=200)
+    billing_email = models.EmailField(blank=True, null=True)
+    billing_phone_number = models.CharField(blank=True, null=True, max_length=20)
+    # billing address
+    billing_address_1 = models.CharField(blank=True, null=True, max_length=250)
+    billing_address_2 = models.CharField(blank=True, null=True, max_length=250)
+    billing_city = models.CharField(blank=True, null=True, max_length=20)
+    billing_country = models.CharField(choices=country_names.items(), blank=True, null=True, max_length=5)
 
-    def get_purchased_items(self) -> Iterable[PurchasedItem]:
-        # Return items that will be included in this payment.
-        yield PurchasedItem(
-            price=Decimal(self.booking.invoice.total_amount),
-            sku=self.booking.invoice.invoice_number,
-            currency=self.booking.invoice.currency,
-            name=f'Booking #{self.booking.pk}',
-            tax_rate=Decimal(
-                (self.booking.invoice.tax_amount / self.booking.invoice.total_amount * 100)
-            ),
-            quantity=1
-        )
+    payment_external_source = models.CharField(max_length=128, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = 'Booking Payments'
