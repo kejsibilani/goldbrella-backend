@@ -1,4 +1,4 @@
-name: gcloud-deploy
+name: Deploy to GCP VM
 
 on:
   push:
@@ -10,27 +10,19 @@ jobs:
     environment: deploy
 
     steps:
-    # 1) Check out your code
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Check out code
+        uses: actions/checkout@v3
 
-    # 2) Authenticate to GCP
-    - id: auth
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.GCP_VM_HOST }}" >> ~/.ssh/known_hosts
 
-    # 3) Install & configure gcloud
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v2
-      with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-
-    # 4) Now you have an “active” account—SSH will work
-    - name: Deploy to GCE via SSH
-      run: |
-        gcloud compute ssh \
-          --project ${{ secrets.GCP_PROJECT_ID }} \
-          --zone ${{ secrets.GCP_ZONE }} \
-          ${{ secrets.GCE_INSTANCE }} \
-          --command="cd /home/${{ secrets.GCE_USER }}/goldbrella-backend && sh deployer.sh"
+      - name: Deploy to GCE via SSH
+        run: |
+          ssh "${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }}" << 'EOF'
+            cd "${{ secrets.GCP_DEPLOY_PATH }}"
+            sh deployer.sh
+          EOF
