@@ -5,6 +5,7 @@ from account.models import User
 from beach.models import Beach, BeachOpeningSeason
 from booking.models import Booking
 from inventory.models import InventoryItem
+from invoice.models import BookingInvoice
 from location.models import Location
 from services.models import Facility, Rule
 from sunbed.models import Sunbed
@@ -81,6 +82,16 @@ def booking_queryset(request):
             Q(booked_by=request.user.pk, user=request.user.pk, _connector=Q.OR)
         )
     return Booking.objects.filter(user=request.user.pk)
+
+
+def invoice_queryset(request):
+    if request.user.is_superuser:
+        return BookingInvoice.objects.all()
+    elif request.user.is_staff:
+        return BookingInvoice.objects.filter(
+            Q(booking__booked_by=request.user.pk, booking__user=request.user.pk, _connector=Q.OR)
+        )
+    return BookingInvoice.objects.filter(booking__user=request.user.pk)
 
 
 def complaint_related_queryset(request):

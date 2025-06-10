@@ -9,7 +9,6 @@ from booking.choices import BookingStatusChoices
 from booking.models import Booking
 from booking.models import BookingToken
 from booking.tasks import cancel_partial_bookings
-from invoice.choices import PaymentMethodChoices
 from invoice.models import BookingInvoice
 
 
@@ -34,7 +33,7 @@ def schedule_auto_cancellation(instance, created, **kwargs):
 
 @receiver(post_save, sender=Booking)
 def create_booking_token(instance, created, **kwargs):
-    if created: BookingToken.objects.create(booking=instance)
+    if created: BookingToken.objects.get_or_create(booking=instance)
     return
 
 
@@ -43,7 +42,6 @@ def create_invoice_for_booking(instance, created, **kwargs):
     if created: BookingInvoice.objects.get_or_create(
         booking=instance,
         defaults={
-            'payment_method': PaymentMethodChoices.STRIPE.value,
             'paid_amount': Decimal(0),
         }
     )

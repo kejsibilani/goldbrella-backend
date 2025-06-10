@@ -2,21 +2,14 @@ from django.db import transaction
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import get_object_or_404, RetrieveUpdateDestroyAPIView
-from rest_framework.mixins import CreateModelMixin
-from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import DjangoModelPermissions
-from rest_framework.response import Response
 
 from booking.filters import BookingFilterSet
 from booking.models import Booking
-from booking.serializers import AnonymousBookingSerializer
 from booking.serializers import BookingReadSerializer
 from booking.serializers import BookingSerializer
 from helpers.pagination import GenericPagination
-from helpers.permissions import IsAnonymousUser
 
 
 # Create your views here.

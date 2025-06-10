@@ -1,4 +1,4 @@
-name: gcloud-deploy
+name: Deploy to GCP VM
 
 on:
   push:
@@ -7,36 +7,23 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: deploy
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Check out code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/runner
+          chmod 600 ~/.ssh/runner
 
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    - name: Authenticate to GCP
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: '${{ secrets.GCP_SA_KEY }}'
-
-    - name: Set up gcloud CLI
-      uses: google-github-actions/setup-gcloud@v1
-      with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-        service_account_key: '${{ secrets.GCP_SA_KEY }}'
-        export_default_credentials: true
-
-    - name: Deploy to GCE via SSH
-      run: |
-        # this uses the gcloud CLI’s built-in SSH; no extra actions needed
-        gcloud compute ssh ${{ secrets.GCE_USER }}@${{ secrets.GCE_INSTANCE }} \
-          --zone=${{ secrets.GCP_ZONE }} \
-          --command="sh deploy.sh"
+      - name: Deploy to GCE via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/runner "${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }}" << 'EOF'
+            cd "${{ secrets.GCP_DEPLOY_PATH }}"
+            git -C "${{ secrets.GCP_DEPLOY_PATH }}" pull
+            source "${{ secrets.GCP_DEPLOY_PATH }}/.venv/bin/activate"
+            sh deploy.sh
+          EOF

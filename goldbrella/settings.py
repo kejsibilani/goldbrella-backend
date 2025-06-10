@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'django_filters',
     'simple_history',
     'corsheaders',
-    'payments',
     'drf_yasg',
     # project apps
     'account.apps.AccountConfig',
@@ -182,6 +181,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+# Email Settings
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_PORT = os.getenv('EMAIL_PORT', default=587)
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX')
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'false').lower() == 'true'
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'false').lower() == 'true'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', default='').split(',')
+
+
 # REST FRAMEWORK
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -234,23 +244,12 @@ SWAGGER_SETTINGS = {
     "REFETCH_SCHEMA_ON_LOGOUT": True,    # reload spec after you log out
 }
 
+
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["*"]
 
-# Django Payments
-PAYMENT_HOST = os.getenv('PAYMENT_HOST', default='localhost:8000')
-PAYMENT_MODEL = 'payment.BookingPayment'
-PAYMENT_VARIANTS = {
-    'dummy': ('payments.dummy.DummyProvider', {}),
-    'stripe': ('payments.stripe.StripeProviderV3', {
-        'api_key': os.getenv('STRIPE_API_KEY'),
-        'endpoint_secret': os.getenv('STRIPE_ENDPOINT_SECRET'),
-        'secure_endpoint': not DEBUG,
-        'use_token': True,
-    }),
-}
 
 # Django Celery Beat
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', default='redis://localhost:6379/0')
@@ -258,6 +257,7 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = "UTC"
+
 
 # Password Reset
 DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = int(os.getenv('PASSWORD_RESET_TOKEN_EXPIRY_TIME', default=24))
@@ -271,15 +271,10 @@ DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
 }
 
 
-# Email Settings
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_PORT = os.getenv('EMAIL_PORT', default=587)
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX')
-EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'false').lower() == 'true'
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'false').lower() == 'true'
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', default='').split(',')
+# Stripe
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 
 
 # Reservation Variables
