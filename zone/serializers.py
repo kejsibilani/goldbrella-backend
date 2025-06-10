@@ -28,6 +28,8 @@ class ZoneListSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_supervisor(obj):
+        if obj.supervisor is None:
+            return None
         return {
             'id': nested_getattr(obj, 'supervisor', 'id'),
             'email': nested_getattr(obj, 'supervisor', 'email'),
