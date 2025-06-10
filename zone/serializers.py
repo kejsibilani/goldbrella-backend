@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
+from helpers.short_func import nested_getattr
 from zone.models import Zone
 
 
@@ -25,10 +26,11 @@ class ZoneListSerializer(serializers.ModelSerializer):
         model = Zone
         fields = "__all__"
 
-    def get_supervisor(self, obj):
+    @staticmethod
+    def get_supervisor(obj):
         return {
-            'id': obj.supervisor.id,
-            'email': obj.supervisor.email,
-            'first_name': obj.supervisor.first_name,
-            'last_name': obj.supervisor.last_name
+            'id': nested_getattr(obj, 'supervisor', 'id'),
+            'email': nested_getattr(obj, 'supervisor', 'email'),
+            'first_name': nested_getattr(obj, 'supervisor', 'first_name'),
+            'last_name': nested_getattr(obj, 'supervisor', 'last_name')
         }
