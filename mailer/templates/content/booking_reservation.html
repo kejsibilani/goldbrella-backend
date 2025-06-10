@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Beach Reservation Is Temporarily Held!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Reset & Base */
+    body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+    table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
+    img { border:0; height:auto; line-height:100%; outline:none; text-decoration:none; }
+    body { margin:0; padding:0; width:100% !important; background-color:#e0f7fa; font-family:'Segoe UI', Arial, sans-serif; color:#333; }
+
+    /* Container */
+    .email-container { max-width:600px; margin:40px auto; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+
+    /* Header */
+    .header {
+      background-position: center;
+      background-size: cover;
+      height:180px;
+      text-align:center;
+      position:relative;
+      color:#fff;
+    }
+    .header .overlay {
+      position:absolute; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,123,192,0.6);
+    }
+    .header h1 {
+      position:relative;
+      margin:0;
+      padding:0;
+      font-size:28px;
+      line-height:180px;
+      z-index:1;
+    }
+
+    /* Body */
+    .body { padding:28px 24px; }
+    .body p { margin:0 0 18px; line-height:1.6; }
+    .body p.lead { font-size:16px; color:#0077be; }
+
+    /* Tables & Lists */
+    .table { width:100%; border-collapse:collapse; margin:20px 0; }
+    .table th, .table td { padding:12px; border-bottom:1px solid #e0e0e0; text-align:left; }
+    .table th { background:#e0f7fa; }
+    .list { list-style:none; margin:20px 0; padding:0; }
+    .list li { padding:10px 0 10px 12px; border-left:4px solid #0077be; margin-bottom:8px; }
+    .list li:last-child { margin-bottom:0; }
+    .list strong { color:#0077be; }
+
+    /* Button */
+    .btn {
+      display:inline-block;
+      padding:14px 24px;
+      background:#0077be;
+      color:#fff !important;
+      text-decoration:none;
+      border-radius:4px;
+      font-weight:bold;
+      margin:24px 0;
+    }
+
+    /* Footer */
+    .footer { background:#f5f7fa; text-align:center; padding:16px; font-size:12px; color:#777; }
+    .footer a { color:#0077be; text-decoration:none; }
+
+    /* Responsive */
+    @media screen and (max-width:480px) {
+      .body { padding:16px; }
+      .header { height:140px; }
+      .header h1 { font-size:24px; line-height:140px; }
+      .btn { width:100%; box-sizing:border-box; text-align:center; }
+    }
+  </style>
+</head>
+<body>
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+    <tr>
+      <td align="center">
+        <table class="email-container" cellpadding="0" cellspacing="0" role="presentation">
+
+          <!-- Fixed Responsive Header -->
+          <tr>
+            <td class="header"
+                background="{{ beach_header_url }}"
+                style="background-image:url('{{ invoice.booking.beach.thumbnail }}');">
+              <div class="overlay"></div>
+              <h1>Beach Reservation</h1>
+            </td>
+          </tr>
+
+          <!-- Body Content -->
+          <tr>
+            <td class="body">
+              <p>Hi <strong>{{ user.full_name }}</strong>,</p>
+              <p class="lead">
+                Thank you for choosing <strong>{{ company.name }}</strong>!
+                We’ve temporarily held your reservation. Please confirm within
+                <strong>{{ hold_expiry_minutes }} minutes</strong> (before
+                {{ hold_expiry_datetime }}), otherwise your hold will expire and your items may become available to others.
+              </p>
+
+              <!-- Reservation Summary -->
+              <table class="table" role="presentation">
+                <tr>
+                  <th>Invoice Number</th>
+                  <td>{{ invoice.invoice_number }}</td>
+                </tr>
+                <tr>
+                  <th>Booking Created On</th>
+                  <td>{{ invoice.booking.created }}</td>
+                </tr>
+                <tr>
+                  <th>Booking Date</th>
+                  <td>{{ invoice.booking.booking_date }}</td>
+                </tr>
+              </table>
+
+              <!-- Sunbeds Section (compulsory) -->
+              <h2 style="font-size:20px;color:#0077be;margin-top:30px;">Sunbeds Reserved</h2>
+              <ul class="list">
+                {% for bed in invoice.booking.sunbeds %}
+                  <li><strong>ID:</strong> {{ bed.identity }}</li>
+                {% endfor %}
+              </ul>
+
+              <!-- Optional Inventory Section -->
+              {% if invoice.booking.inventory.exists %}
+                <h2 style="font-size:20px;color:#0077be;margin-top:30px;">Additional Inventory</h2>
+                <ul class="list">
+                  {% for item in invoice.booking.inventory %}
+                    <li><strong>{{ item.inventory_item.name }}:</strong> {{ item.quantity }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+
+              <!-- Pricing Details -->
+              <h2 style="font-size:20px;color:#0077be;margin-top:30px;">Pricing Details</h2>
+              <table class="table" role="presentation">
+                <tr>
+                  <th>Subtotal</th>
+                  <td>{{ invoice.subtotal_amount }}</td>
+                </tr>
+                {% if invoice.tax_amount %}
+                <tr>
+                  <th>VAT</th>
+                  <td>{{ invoice.tax_amount }}</td>
+                </tr>
+                {% endif %}]
+                {% if invoice.booking.discount %}
+                  <tr>
+                    <th>Discount</th>
+                    <td>{{ invoice.booking.discount }}</td>
+                  </tr>
+                {% endif %}
+                <tr>
+                  <th>Total Amount</th>
+                  <td><strong>{{ invoice.total_amount }}</strong></td>
+                </tr>
+              </table>
+
+              <!-- Manage Reservation Button -->
+              <p style="text-align:center;">
+                <a href="{{ reservation_page_link }}" class="btn">Manage Reservation</a>
+              </p>
+
+              <p>
+                If you have any questions, please visit our
+                <a href="{{ contact_page_link }}">contact page</a>
+                or our <a href="{{ support_page_link }}">support section</a>.
+                We look forward to welcoming you!
+              </p>
+              <p>Sunny days ahead,<br>{{ company.name }} Team</p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="footer">
+              <p>{{ company.name }} · {{ company.address }}</p>
+              <p>
+                <a href="{{ unsubscribe_link }}">Unsubscribe</a> |
+                <a href="{{ company.website }}">Visit our website</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
