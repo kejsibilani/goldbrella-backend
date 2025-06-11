@@ -130,7 +130,7 @@
               {% if invoice.booking.inventory.exists %}
                 <h2 style="font-size:20px;color:#0077be;margin-top:30px;">Additional Inventory</h2>
                 <ul class="list">
-                  {% for item in invoice.booking.inventory %}
+                  {% for item in invoice.booking.inventory.all %}
                     <li><strong>{{ item.inventory_item.name }}:</strong> {{ item.quantity }}</li>
                   {% endfor %}
                 </ul>
