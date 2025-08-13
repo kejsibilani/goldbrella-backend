@@ -13,6 +13,7 @@ class InventoryItemFilterSet(FilterSet):
     beach = filters.ModelMultipleChoiceFilter(queryset=beach_queryset)
     created = filters.DateTimeFromToRangeFilter()
     updated = filters.DateTimeFromToRangeFilter()
+    category = filters.CharFilter(lookup_expr='exact')
 
     class Meta:
         model = InventoryItem

@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import TokenVerifyView
 from account.views import UserProfileView
 from account.views import UserRegisterViewSet
 from account.views import UserViewSet
+from account.views.logout import CustomLogoutView
 
 app_name = "account"
 
@@ -21,7 +22,7 @@ urlpatterns = [
     path('login', TokenObtainPairView.as_view(), name='login'),
     path('verify', TokenVerifyView.as_view(), name='verify'),
     path('refresh', TokenRefreshView.as_view(), name='refresh'),
-    path('logout', TokenBlacklistView.as_view(), name='logout'),
+    path('logout', CustomLogoutView.as_view(), name='logout'),
     path('profile', UserProfileView.as_view(), name='profile'),
 ]
 

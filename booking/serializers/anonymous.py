@@ -43,54 +43,75 @@ class AnonymousBookingSerializer(WritableNestedModelSerializer):
                 {"booking_date": "Booking date cannot be in the past"}
             )
 
-        # beach validation on sunbeds
+        # Get beach from sunbeds if not provided directly
+        beach = attrs.get("beach")
         sunbeds = attrs.get("sunbeds", self.instance.sunbeds.all() if self.instance else [])
-        beach = attrs.get("beach", getattr(self.instance, 'beach', None))
+        
+        if not beach and sunbeds:
+            # Try to get beach from the first sunbed
+            try:
+                beach = sunbeds[0].zone.beach
+                attrs['beach'] = beach
+            except (AttributeError, IndexError):
+                raise serializers.ValidationError(
+                    {"sunbeds": "Could not determine beach from sunbeds"}
+                )
+        
+        if not beach:
+            raise serializers.ValidationError(
+                {"beach": "Beach is required or must be determinable from sunbeds"}
+            )
+
+        # beach validation on sunbeds
         for sunbed in sunbeds:
             try:
-                if sunbed.zone.beach.pk != beach.pk: raise serializers.ValidationError(
-                    {'sunbeds': f"Sunbed {sunbed.pk} not found in beach {beach.pk}"}
-                )
-            except serializers.ValidationError as ve:
-                errors.append(ve.detail)
+                if sunbed.zone.beach.pk != beach.pk: 
+                    raise serializers.ValidationError(
+                        {'sunbeds': f"Sunbed {sunbed.pk} does not belong to beach {beach.pk}"}
+                    )
+            except Exception as e:
+                errors.append(f"Error validating sunbed {sunbed.pk}: {str(e)}")
                 continue
 
             try:
                 if not sunbed.check_availability(
                         booking_date=booking_date,
                         booking=self.instance
-                ): raise serializers.ValidationError(
-                    {'sunbeds': f"Sunbed {sunbed.pk} is already booked for {booking_date}"}
-                )
-            except serializers.ValidationError as ve:
-                errors.append(ve.detail)
+                ): 
+                    raise serializers.ValidationError(
+                        {'sunbeds': f"Sunbed {sunbed.pk} is already booked for {booking_date}"}
+                    )
+            except Exception as e:
+                errors.append(f"Error checking sunbed availability {sunbed.pk}: {str(e)}")
 
         # beach validation on inventory
         inventory = attrs.get("inventory", self.instance.inventory.all() if self.instance else [])
         for item in inventory:
             if isinstance(item, dict):
                 try:
-                    if nested_getattr(item.get('inventory_item'), 'beach', 'pk') != beach.pk: raise serializers.ValidationError(
-                        {
-                            'inventory_items': f"Inventory item {getattr(item.get('inventory_item'), 'pk')}"
-                                               f" not found in beach {beach.pk}"
-                        }
-                    )
-                except serializers.ValidationError as ve:
-                    errors.append(ve.detail)
+                    inventory_item = item.get('inventory_item')
+                    if inventory_item and hasattr(inventory_item, 'beach'):
+                        if inventory_item.beach.pk != beach.pk: 
+                            raise serializers.ValidationError(
+                                {'inventory': f"Inventory item {inventory_item.pk} not found in beach {beach.pk}"}
+                            )
+                except Exception as e:
+                    errors.append(f"Error validating inventory item: {str(e)}")
             else:
                 try:
-                    if item.beach.pk != beach.pk: raise serializers.ValidationError(
-                        {'inventory_items': f"Inventory item {item.inventory_item.pk} not found in beach {beach.pk}"}
-                    )
-                except serializers.ValidationError as ve:
-                    errors.append(ve.detail)
+                    if hasattr(item, 'inventory_item') and item.inventory_item.beach.pk != beach.pk: 
+                        raise serializers.ValidationError(
+                            {'inventory': f"Inventory item {item.inventory_item.pk} not found in beach {beach.pk}"}
+                        )
+                except Exception as e:
+                    errors.append(f"Error validating inventory item: {str(e)}")
 
         if errors:
             raise serializers.ValidationError({'detail': errors})
 
-        #  update booked by to user
+        # update booked by to user
         if not self.instance:
             self.initial_data['booked_by'] = self.initial_data.get('user')
             attrs['booked_by'] = attrs['user']
+        
         return attrs

@@ -42,10 +42,10 @@ class BookingInvoiceReadViewSet(viewsets.GenericViewSet):
         if request_user.is_superuser:
             return Booking.objects.all()
         elif request_user.is_staff:
-            return BookingInvoice.objects.filter(
+            return Booking.objects.filter(
                 Q(booked_by=request_user, user=request_user, _connector=Q.OR)
             )
-        return BookingInvoice.objects.filter(user=request_user)
+        return Booking.objects.filter(user=request_user)
 
     @action(methods=['get'], detail=True)
     def invoice(self, request, *args, **kwargs):

@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from account.choices import UserRoleChoices
 from account.managers import UserManager
 from account.mixins import PermissionMixin
+from beach.models import Beach
 
 
 # Create your models here.
@@ -30,6 +31,15 @@ class User(PermissionMixin, AbstractUser):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     preferred_language = models.CharField(max_length=20, null=True, blank=True)
+
+    managed_beach = models.ForeignKey(
+        Beach,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='staff_members',
+        help_text='The beach this staff user manages. Null for non-staff or admin.'
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

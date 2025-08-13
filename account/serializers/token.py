@@ -13,6 +13,8 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
         refresh = self.get_token(self.user)
 
         data['role'] = self.user.role
+        if self.user.role == 'staff':
+            data['managed_beach'] = self.user.managed_beach_id
         data["refresh"] = str(refresh)
         data["access"] = str(refresh.access_token)
 

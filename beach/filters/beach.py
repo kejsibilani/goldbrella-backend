@@ -1,30 +1,79 @@
-from django_filters.rest_framework import FilterSet
-from django_filters.rest_framework import filters
-from pytz import country_names
-
+from django_filters.rest_framework import FilterSet, filters
+from django.db.models import ImageField
+from django_filters.filters import CharFilter
 from beach.models import Beach
-from helpers.querysets import beach_location_queryset
-from helpers.querysets import facilities_queryset
-from helpers.querysets import rules_queryset
+from django.db.models.functions import Lower
+from django.db.models import Func, F, FloatField, ExpressionWrapper
+from django.db.models.expressions import RawSQL
+import unicodedata
+from django.db.models import Q
 
+class Unaccent(Func):
+    function = 'unaccent'
+    output_field = CharFilter().field
 
 class BeachFilterSet(FilterSet):
-    title = filters.CharFilter(lookup_expr='icontains')
+    title = filters.CharFilter(method='accent_insensitive_title')
     description = filters.CharFilter(lookup_expr='icontains')
-    latitude = filters.NumericRangeFilter()
-    longitude = filters.NumericRangeFilter()
-    location = filters.ModelMultipleChoiceFilter(queryset=beach_location_queryset)
-    facilities = filters.ModelMultipleChoiceFilter(queryset=facilities_queryset)
-    rules = filters.ModelMultipleChoiceFilter(queryset=rules_queryset)
-    created = filters.DateTimeFromToRangeFilter()
-    updated = filters.DateTimeFromToRangeFilter()
-    # query on location city and country
-    city = filters.CharFilter(lookup_expr='icontains', field_name='location__city')
-    country = filters.MultipleChoiceFilter(choices=country_names.items(), field_name='location__country')
-    # opening season
-    opening_date = filters.DateFromToRangeFilter(field_name='seasons__opening_date')
-    closing_date = filters.DateFromToRangeFilter(field_name='seasons__closing_date')
+    lat = filters.NumberFilter(method='filter_proximity')
+    lng = filters.NumberFilter(method='filter_proximity')
+    radius = filters.NumberFilter(method='filter_proximity')
+    city = filters.CharFilter(method='filter_city_or_location')
+    location = filters.NumberFilter(field_name='location', lookup_expr='exact')
 
     class Meta:
         model = Beach
-        fields = "__all__"
+        fields = [
+            "title",
+            "description",
+            "latitude",
+            "longitude",
+            "location",
+            "facilities",
+            "rules",
+            "image",
+            "created",
+            "updated",
+        ]
+        filter_overrides = {
+            ImageField: {
+                'filter_class': CharFilter,
+                'extra': lambda f: {'lookup_expr': 'icontains'},
+            },
+        }
+
+    def accent_insensitive_title(self, queryset, name, value):
+        # Try to use unaccent if available, else fallback to python-side normalization
+        try:
+            return queryset.annotate(
+                title_unaccent=Unaccent(Lower('title'))
+            ).filter(title_unaccent__icontains=unicodedata.normalize('NFKD', value).encode('ASCII', 'ignore').decode('utf-8').lower())
+        except Exception:
+            # fallback: python-side normalization
+            def normalize(s):
+                return unicodedata.normalize('NFKD', s).encode('ASCII', 'ignore').decode('utf-8').lower()
+            return [b for b in queryset if normalize(b.title).find(normalize(value)) != -1]
+
+    def filter_proximity(self, queryset, name, value):
+        lat = self.data.get('lat')
+        lng = self.data.get('lng')
+        radius = self.data.get('radius', 10)  # default 10km
+        if lat and lng:
+            lat = float(lat)
+            lng = float(lng)
+            radius = float(radius)
+            # Haversine formula (distance in km)
+            raw_sql = (
+                "6371 * acos(cos(radians(%s)) * cos(radians(latitude)) * cos(radians(longitude) - radians(%s)) + sin(radians(%s)) * sin(radians(latitude)))"
+            )
+            return queryset.annotate(
+                distance=RawSQL(raw_sql, (lat, lng, lat))
+            ).filter(distance__lte=radius).order_by('distance')
+        return queryset
+
+    def filter_city_or_location(self, queryset, name, value):
+        # If value is numeric, treat as location ID
+        if value.isdigit():
+            return queryset.filter(location_id=int(value))
+        # Otherwise, treat as city name (icontains)
+        return queryset.filter(location__city__icontains=value)

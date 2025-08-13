@@ -29,6 +29,8 @@ class Sunbed(models.Model):
         choices=SunbedStatusChoices.choices,
         default=SunbedStatusChoices.AVAILABLE.value
     )
+    row = models.PositiveIntegerField(null=True, blank=True, help_text="Row number for visual placement")
+    column = models.PositiveIntegerField(null=True, blank=True, help_text="Column number for visual placement")
 
     zone = models.ForeignKey(
         to='zone.Zone',

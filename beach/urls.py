@@ -1,4 +1,5 @@
 from rest_framework.routers import DefaultRouter
+from django.urls import path
 
 from beach.views import BeachImageListViewSet
 from beach.views import BeachImageViewSet
@@ -15,17 +16,32 @@ from zone.views import BeachZoneListViewSet
 app_name = "beach"
 
 router = DefaultRouter(trailing_slash=False)
-router.register('beaches/images', BeachImageViewSet, basename='image')
-router.register('beaches/opening-hours', BeachOpeningHourViewSet, basename='opening')
-router.register('beaches/opening-seasons', BeachOpeningSeasonViewSet, basename='season')
-router.register('beaches/opening-seasons', BeachSeasonOpeningHourListViewSet, basename='opening-list-season')
-router.register('beaches', BeachImageListViewSet, basename='image-list')
-router.register('beaches', BeachOpeningHourListViewSet, basename='opening-list')
-router.register('beaches', BeachOpeningSeasonListViewSet, basename='season-list')
-router.register('beaches', BeachZoneListViewSet, basename='zone-list')
-router.register('beaches', BeachSunbedListViewSet, basename='sunbed-list')
-router.register('beaches', BeachInventoryItemListViewSet, basename='inventory-item-list')
-router.register('beaches', BeachViewSet, basename='beach')
 
+# Image management
+router.register('beach-images', BeachImageViewSet, basename='image')
+router.register('beach-images-list', BeachImageListViewSet, basename='image-list')
+
+# Opening hours
+router.register('beach-opening-hours', BeachOpeningHourViewSet, basename='opening')
+router.register('beach-opening-hours-list', BeachOpeningHourListViewSet, basename='opening-list')
+
+# Opening seasons
+router.register('beach-opening-seasons', BeachOpeningSeasonViewSet, basename='season')
+router.register('beach-opening-seasons-list', BeachOpeningSeasonListViewSet, basename='season-list')
+router.register('beach-season-opening-hours', BeachSeasonOpeningHourListViewSet, basename='opening-list-season')
+
+# Core beach resources
+router.register('beaches', BeachViewSet, basename='beach')
+router.register('beach-zones', BeachZoneListViewSet, basename='zone-list')
+router.register('beach-sunbeds', BeachSunbedListViewSet, basename='sunbed-list')
+router.register('beach-inventory-items', BeachInventoryItemListViewSet, basename='inventory-item-list')
 
 urlpatterns = router.urls
+
+# Add explicit nested routes for beaches
+urlpatterns += [
+    path('beaches/<int:pk>/sunbeds', BeachSunbedListViewSet.as_view({'get': 'sunbeds'}), name='beach-sunbeds'),
+    path('beaches/<int:pk>/opening-seasons', BeachOpeningSeasonViewSet.as_view({'get': 'list'}), name='beach-opening-seasons'),
+    path('beaches/<int:pk>/opening-hours', BeachOpeningHourListViewSet.as_view({'get': 'open_hours'}), name='beach-opening-hours'),
+    path('beaches/<int:pk>/inventory-items', BeachInventoryItemListViewSet.as_view({'get': 'inventory'}), name='beach-inventory-items'),
+]

@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class Beach(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -24,6 +23,10 @@ class Beach(models.Model):
         related_name="beaches",
         blank=True
     )
+
+    image = models.ImageField(upload_to='beach_images/', null=True, blank=True)
+
+    code = models.CharField(max_length=32, unique=True, null=True, blank=True, help_text="Unique code for QR or direct access")
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

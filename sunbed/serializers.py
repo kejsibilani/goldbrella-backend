@@ -5,6 +5,7 @@ from sunbed.models import Sunbed
 
 
 class SunbedSerializer(serializers.ModelSerializer):
+    # 'row' and 'column' fields are now included for visual organization
     class Meta:
         model = Sunbed
         fields = '__all__'
@@ -22,7 +23,7 @@ class SunbedSerializer(serializers.ModelSerializer):
 
 class AvailableSunbedSerializer(serializers.ModelSerializer):
     available = serializers.SerializerMethodField()
-
+    # 'row' and 'column' fields are now included for visual organization
     class Meta:
         model = Sunbed
         fields = '__all__'

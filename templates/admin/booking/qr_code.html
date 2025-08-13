@@ -1,0 +1,111 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+<style>
+    .qr-container {
+        text-align: center;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 20px auto;
+        max-width: 600px;
+    }
+    .qr-image {
+        max-width: 300px;
+        margin: 20px auto;
+        display: block;
+    }
+    .booking-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+        text-align: left;
+    }
+    .verification-url {
+        word-break: break-all;
+        background: #e9ecef;
+        padding: 10px;
+        border-radius: 3px;
+        font-family: monospace;
+        font-size: 12px;
+        margin: 10px 0;
+    }
+    .action-buttons {
+        margin-top: 20px;
+    }
+    .btn {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="qr-container">
+    <h1>{{ title }}</h1>
+    
+    <div class="booking-info">
+        <h3>Booking Details</h3>
+        <p><strong>ID:</strong> {{ booking.id }}</p>
+        <p><strong>User:</strong> {{ booking.user.get_full_name|default:booking.user.email }}</p>
+        <p><strong>Beach:</strong> {{ booking.beach.title }}</p>
+        <p><strong>Date:</strong> {{ booking.booking_date }}</p>
+        <p><strong>Status:</strong> {{ booking.get_status_display }}</p>
+        <p><strong>Token:</strong> {{ qr_data.token }}</p>
+    </div>
+    
+    <div>
+        <h3>QR Code</h3>
+        <img src="data:image/png;base64,{{ qr_data.qr_code }}" alt="QR Code" class="qr-image">
+        
+        <div class="verification-url">
+            <strong>Verification URL:</strong><br>
+            {{ qr_data.verification_url }}
+        </div>
+    </div>
+    
+    <div class="action-buttons">
+        <a href="{% url 'admin:booking_booking_change' booking.id %}" class="btn btn-secondary">
+            Back to Booking
+        </a>
+        <a href="{% url 'admin:booking_booking_verify' booking.id %}" class="btn btn-success">
+            Verify Booking
+        </a>
+        <button onclick="window.print()" class="btn btn-primary">
+            Print QR Code
+        </button>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+        <h4>Instructions for Admin:</h4>
+        <ul>
+            <li>Scan this QR code using any QR code scanner app</li>
+            <li>The QR code contains a verification URL that will validate the booking</li>
+            <li>You can also manually verify the booking using the "Verify Booking" button above</li>
+            <li>The verification URL can be shared with staff for manual verification</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

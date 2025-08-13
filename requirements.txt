@@ -68,6 +68,7 @@ python-decouple==3.8
 python-dotenv==1.0.1
 pytz==2025.1
 PyYAML==6.0.2
+qrcode[pil]==7.4.2
 redis==6.1.0
 requests==2.32.3
 requests-oauthlib==2.0.0
@@ -87,3 +88,4 @@ urllib3==2.3.0
 vine==5.1.0
 wcwidth==0.2.13
 zope.interface==7.2
+gunicorn==21.2.0

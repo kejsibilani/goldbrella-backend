@@ -8,6 +8,14 @@ from booking.choices import BookingStatusChoices
 
 
 class InventoryItem(models.Model):
+    CATEGORY_CHOICES = [
+        ("Cocktails", "Cocktails"),
+        ("Beer", "Beer"),
+        ("Wine", "Wine"),
+        ("Non-Alcoholic", "Non-Alcoholic"),
+        ("Food", "Food"),
+        ("Other", "Other"),
+    ]
     name = models.CharField(max_length=100)
     reusable_item = models.BooleanField(default=False)
     quantity = models.PositiveIntegerField(
@@ -17,6 +25,12 @@ class InventoryItem(models.Model):
     price = models.DecimalField(
         max_digits=10, decimal_places=2,
         validators=[MinValueValidator(Decimal(0))]
+    )
+
+    category = models.CharField(
+        max_length=32,
+        choices=CATEGORY_CHOICES,
+        default="Other"
     )
 
     beach = models.ForeignKey(

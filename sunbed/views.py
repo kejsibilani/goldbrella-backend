@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 from beach.models import Beach
 from booking.choices import BookingStatusChoices
@@ -20,11 +21,21 @@ class SunbedViewSet(viewsets.ModelViewSet):
     filterset_class = SunbedFilterSet
     queryset = Sunbed.objects.all()
 
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return super().get_permissions()
+
 
 class ZoneSunbedListViewSet(viewsets.GenericViewSet):
     serializer_class = AvailableSunbedSerializer
     pagination_class = GenericPagination
     queryset = Zone.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['sunbeds']:
+            return [AllowAny()]
+        return super().get_permissions()
 
     @action(detail=True, methods=['get'], url_path='sunbeds')
     def sunbeds(self, request, *args, **kwargs):
@@ -73,6 +84,11 @@ class BeachSunbedListViewSet(viewsets.GenericViewSet):
     serializer_class = AvailableSunbedSerializer
     pagination_class = GenericPagination
     queryset = Beach.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['sunbeds']:
+            return [AllowAny()]
+        return super().get_permissions()
 
     @action(detail=True, methods=['get'], url_path='sunbeds')
     def sunbeds(self, request, *args, **kwargs):

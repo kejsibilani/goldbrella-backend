@@ -3,6 +3,9 @@ from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.filters import SearchFilter
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from account.filters import UserFilterSet
 from account.models import User
@@ -13,7 +16,6 @@ from helpers.permissions import CustomDjangoModelPermissions
 
 class UserViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    permission_classes = [CustomDjangoModelPermissions]
     pagination_class = GenericPagination
     serializer_class = UserSerializer
     filterset_class = UserFilterSet
@@ -22,6 +24,11 @@ class UserViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyM
         'email', 'phone_number',
     ]
 
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [CustomDjangoModelPermissions()]
+
     def get_queryset(self):
         request_user = self.request.user
         if request_user.is_superuser:
@@ -29,6 +36,12 @@ class UserViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyM
         elif request_user.is_staff:
             return User.objects.filter(role='guest')
         return User.objects.filter(pk=request_user.pk, is_active=True)
+
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        """Get current user's profile information"""
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
 
     def perform_destroy(self, instance):
         # validate the query params

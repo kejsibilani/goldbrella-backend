@@ -14,44 +14,43 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.contrib import admin
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib import admin
-from django.urls import include
-from django.urls import path
-from drf_yasg import openapi
+from rest_framework import permissions
 from drf_yasg.views import get_schema_view
-from rest_framework.permissions import AllowAny
-from rest_framework_simplejwt.authentication import JWTAuthentication
-
-from payment.views.webhook import stripe_webhook
+from drf_yasg import openapi
+from django.http import JsonResponse
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="GoldBrella API",
-        default_version="v1",
-        description="API documentation for GoldBrella project",
-        terms_of_service="https://www.yourwebsite.com/terms/",
-        contact=openapi.Contact(email="support@yourwebsite.com"),
-        license=openapi.License(name="MIT License"),
+        title="Goldbrella API",
+        default_version='v1',
+        description="API for Goldbrella sunbed booking platform",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="contact@goldbrella.com"),
+        license=openapi.License(name="BSD License"),
     ),
-    authentication_classes=[JWTAuthentication],
-    permission_classes=[AllowAny],
+    public=True,
+    permission_classes=(permissions.AllowAny,),
 )
+
+def test_endpoint(request):
+    return JsonResponse({
+        'message': 'API is working!',
+        'cors_enabled': True,
+        'timestamp': '2024-01-01T00:00:00Z'
+    })
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    # API Endpoints
-    path('api/v1/', include(('api.v1', 'api_v1'), namespace='v1')),
-
-    # Swagger Documentation
-    path('api/docs', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-ui'),
-
-    # Stripe Webhook
-    path('stripe/webhook/', stripe_webhook, name='stripe-webhook'),
+    path('api/v1/', include('api.v1')),
+    path('test/', test_endpoint, name='test'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
 if settings.DEBUG:
-    urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
-    urlpatterns.extend(static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

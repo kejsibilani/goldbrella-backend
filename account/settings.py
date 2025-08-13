@@ -38,7 +38,7 @@ GUEST_USER_PERMISSION_SET = {
     'change_booking',
     'delete_booking',
 }
-
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'https://b9cc8f8ef2cc.ngrok-free.app']
 SUPERVISOR_USER_PERMISSION_SET = {
     'add_booking',
     'view_booking',

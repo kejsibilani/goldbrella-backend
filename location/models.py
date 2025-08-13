@@ -6,6 +6,7 @@ from pytz import country_names
 class Location(models.Model):
     country = models.CharField(max_length=5, choices=country_names.items())
     city = models.CharField(max_length=100)
+    priority = models.IntegerField(default=0, help_text="Lower values are higher priority.")
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

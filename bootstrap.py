@@ -26,6 +26,7 @@ from beach.factories import BeachImageFactory
 from beach.factories import BeachOpeningSeasonFactory
 from booking.factories import BookingFactory
 from inventory.factories import InventoryItemFactory
+from inventory.factories import BarProductFactory
 from location.factories import LocationFactory
 from review.factories import ReviewFactory
 from sunbed.factories import SunbedFactory
@@ -87,6 +88,9 @@ for location in locations:
         print(f'..................... SEASONS FOR {beach.title.upper()} ADDED .....................')
         InventoryItemFactory.create_batch(50, beach=beach)
         print(f'..................... INVENTORY ITEMS FOR {beach.title.upper()} ADDED .....................')
+        # Add bar products
+        BarProductFactory.create_batch(14, beach=beach)
+        print(f'..................... BAR PRODUCTS FOR {beach.title.upper()} ADDED .....................')
         zones = ZoneFactory.create_batch(2, beach=beach)
         print(f'..................... ZONES FOR {beach.title.upper()} ADDED .....................')
         for zone in zones:
